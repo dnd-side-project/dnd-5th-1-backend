@@ -1,6 +1,7 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import cors, { CorsOptions } from 'cors'
+import authRouter from 'auth'
 
 dotenv.config()
 
@@ -29,13 +30,14 @@ export default class Server {
 
   private setup(): void {
     this.app.use(cors(corsOption))
-    this.app.get('/', (req, res) => {
-      return res.send('Hello')
+    this.app.get('/health', (req, res) => {
+      return res.send('server healthy')
     })
-    // this.app.use('/api/auth', authRouter)
+    this.app.use('/api/auth', authRouter)
   }
 
-  public start() {
-    return this.app.listen(PORT)
+  public start(): void {
+    this.app.listen(PORT || 3000)
+    return
   }
 }
