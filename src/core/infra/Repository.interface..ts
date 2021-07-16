@@ -1,5 +1,5 @@
 export interface Repository<T> {
   exists(t: T): Promise<boolean>
-  save(t: T): Promise<any>
+  save(t: T): Promise<void>
   delete(t: T): Promise<any>
 }
