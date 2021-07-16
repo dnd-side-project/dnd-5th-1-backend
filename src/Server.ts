@@ -1,7 +1,7 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import cors, { CorsOptions } from 'cors'
-import authRouter from 'auth'
+import authRouter from './auth'
 
 dotenv.config()
 
@@ -37,7 +37,9 @@ export default class Server {
   }
 
   public start(): void {
-    this.app.listen(PORT || 3000)
+    this.app.listen(PORT || 3000, () => {
+      console.log(`Server Listening on port ${PORT}`)
+    })
     return
   }
 }
