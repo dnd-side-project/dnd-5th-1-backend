@@ -33,7 +33,7 @@ export default class Server {
     this.app.get('/health', (req, res) => {
       return res.send('server healthy')
     })
-    this.app.use('/api/auth', authRouter)
+    this.app.use('/v1/auth', authRouter)
   }
 
   public start(): void {
