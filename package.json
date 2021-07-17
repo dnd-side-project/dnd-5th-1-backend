@@ -22,10 +22,12 @@
   "dependencies": {
     "express": "^4.17.1",
     "passport": "^0.4.1",
-    "passport-kakao": "^1.0.1"
+    "passport-kakao": "^1.0.1",
+    "jsonwebtoken": "^8.5.1"
   },
   "scripts": {
     "dev": "nodemon --exec ts-node src/index.ts",
     "build": "tsc -p ."
-  }
+  },
+  "repository": "https://github.com/sjunhong/dnd-5th-1-backend.git"
 }
