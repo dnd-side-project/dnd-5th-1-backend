@@ -1,30 +1,66 @@
 import { UniqueEntityId } from 'core/infra/unique-entity-id'
-import { Entity } from '../../core/infra/entitiy'
+import { BaseEntity } from '../../core/infra/base-entity'
 
-interface UserProps {
+export interface UserProps {
   name: string
   email: string
   image_url?: string
+  createdAt: Date
+  updatedAt: Date
 }
 
-export class User extends Entity<UserProps> {
-  get id(): UniqueEntityId {
-    return this._id
-  }
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm'
 
-  get name(): string {
-    return this.props.name
-  }
+@Entity('user', { schema: 'app-db' })
+export class User {
 
-  get email(): string {
-    return this.props.email
-  }
+  @PrimaryGeneratedColumn('uuid')
+  id!: string
 
-  get image_url(): string | undefined {
-    return this.props.image_url
-  }
+  @Column('varchar', {
+    name: 'profile_url',
+    nullable: false,
+    comment: 'user profile image',
+    length: 200
+  })
+  image_url!: string
 
-  constructor(props: UserProps, id?: UniqueEntityId) {
-    super(props, id)
-  }
+  @Column('varchar', {
+    name: 'user_name',
+    nullable: false,
+    comment: 'user name',
+    length: 200
+  })
+  name!: string
+    
+    
+    @Column('varchar', {
+    name: 'email',
+    nullable: false,
+    comment: 'email',
+    length: 200
+  })
+  email!: string
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    comment: 'created date'
+  })
+  createdAt!: Date
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+    comment: 'updated date'
+  })
+  updatedAt!: Date
+
 }

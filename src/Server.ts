@@ -2,6 +2,7 @@ import express from 'express'
 import dotenv from 'dotenv'
 import cors, { CorsOptions } from 'cors'
 import authRouter from './auth'
+import { getConnection } from './infra/database'
 
 dotenv.config()
 
@@ -29,6 +30,7 @@ export default class Server {
   }
 
   private setup(): void {
+    getConnection()
     this.app.use(cors(corsOption))
     this.app.get('/health', (req, res) => {
       return res.send('server healthy')

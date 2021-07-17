@@ -1,4 +1,4 @@
-import { UserRepository } from './user.in-memory'
+import { UserRepository } from './user-repository'
 
 const userRepository = new UserRepository()
 
