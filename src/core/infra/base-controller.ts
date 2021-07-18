@@ -61,6 +61,14 @@ export abstract class BaseController {
     )
   }
 
+  public alreadyExists(message?: string) {
+    return BaseController.jsonResponse(
+      this.res,
+      400,
+      message ? message : 'Data Already Exists'
+    )
+  }
+
   public todo() {
     return BaseController.jsonResponse(this.res, 400, 'TODO')
   }

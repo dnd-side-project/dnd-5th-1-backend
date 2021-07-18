@@ -31,6 +31,22 @@ export class User {
   image_url!: string
 
   @Column('varchar', {
+    name: 'vendor',
+    nullable: false,
+    comment: 'provider name',
+    length: 20,
+  })
+  vendor!: string
+
+  @Column('varchar', {
+    name: 'vendorAccountId',
+    nullable: false,
+    comment: 'provided user unique key',
+    length: 200,
+  })
+  vendorAccountId!: string
+
+  @Column('varchar', {
     name: 'nickname',
     nullable: false,
     comment: 'user nickname',

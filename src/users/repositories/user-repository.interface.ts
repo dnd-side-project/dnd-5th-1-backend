@@ -7,4 +7,11 @@ export interface IUserRepository extends Repository<User> {
     vendor: string,
     vendorAccountId: string
   ): Promise<User | null>
+  createUser(
+    nickname: string,
+    vendor: string,
+    vendorAccountId: string,
+    email: string,
+    image_url: string
+  ): Promise<User | null >
 }
