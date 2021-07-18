@@ -2,11 +2,15 @@ import { generateToken } from 'auth/token/generate-token'
 import { IUserRepository } from 'users/repositories/user-repository.interface'
 import * as SocialSigninErrors from './social-signin-error'
 import {
-  SigninWithAppleInputDto,
-  SigninWithAppleOutputDto as SocialSigninOutputDto,
+  SocialSigninInputDto,
+  SocialSigninOutputDto as SocialSigninOutputDto,
 } from './social-signin-dto'
+import { Vendor, VendorType } from 'users/domain/vendor'
 
-type Response = SocialSigninOutputDto | SocialSigninErrors.UserNotFound
+type Response =
+  | SocialSigninOutputDto
+  | SocialSigninErrors.UserNotFound
+  | SocialSigninErrors.InvalidVendor
 
 export class SocialSignin {
   private userRepository: IUserRepository
@@ -15,9 +19,13 @@ export class SocialSignin {
     this.userRepository = userRepository
   }
 
-  public async execute(inputDto: SigninWithAppleInputDto): Promise<Response> {
+  public async execute(inputDto: SocialSigninInputDto): Promise<Response> {
     try {
-      const { vendor, vendorAccountId, email } = inputDto
+      const { vendorAccountId } = inputDto
+      if (!Vendor.isVendor(inputDto.vendor)) {
+        return new SocialSigninErrors.InvalidVendor()
+      }
+      const vendor = new Vendor(inputDto.vendor as VendorType)
 
       const alreadyCreatedUser =
         await this.userRepository.findByVendorAndVendorAccountId(

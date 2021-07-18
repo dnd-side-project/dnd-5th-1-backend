@@ -35,8 +35,8 @@ export class SocialSigninController extends BaseController {
         })
 
         return this.ok(this.res, 200, {
-          profilePictureImage: outputDto.user.image_url,
-          nickname: outputDto.user.nickname,
+          profilePictureImage: outputDto.user.imageUrl.value,
+          nickname: outputDto.user.nickname.value,
         })
       }
     } catch (error: unknown) {

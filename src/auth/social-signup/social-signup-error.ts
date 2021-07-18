@@ -5,3 +5,9 @@ export class UserExists extends UseCaseError {
     super('User Already Exists')
   }
 }
+
+export class InvalidVendor extends UseCaseError {
+  constructor() {
+    super('Invalid Vendor, please provide either "Kakao" or "Apple"')
+  }
+}

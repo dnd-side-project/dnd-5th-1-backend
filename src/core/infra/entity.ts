@@ -1,6 +1,6 @@
 import { UniqueEntityId } from 'core/infra/unique-entity-id'
 
-export abstract class BaseEntity<T> {
+export abstract class Entity<T> {
   // chagne _id type to id VO
   protected readonly _id: UniqueEntityId
   public readonly props: T
