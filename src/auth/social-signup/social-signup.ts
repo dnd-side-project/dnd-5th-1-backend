@@ -1,23 +1,23 @@
 import { generateToken } from 'auth/token/generate-token'
 import { IUserRepository } from 'users/repositories/user-repository.interface'
-import * as SignupError from './signup-error'
+import * as SocialSignupError from './social-signup-error'
 import {
-  SignupInputDto,
-  SignupOutputDto,
-} from './signup-dto'
+  SocialSignupInputDto,
+  SocialSignupOutputDto,
+} from './social-signup-dto'
 
-type Response = SignupOutputDto | SignupError.UserExists
+type Response = SocialSignupOutputDto | SocialSignupError.UserExists
 
-export class Signup {
+export class SocialSignup {
   private userRepository: IUserRepository
 
   constructor(userRepository: IUserRepository) {
     this.userRepository = userRepository
   }
 
-  public async execute(inputDto: SignupInputDto): Promise<Response> {
+  public async execute(inputDto: SocialSignupInputDto): Promise<Response> {
     try {
-      const { nickname, vendor, vendorAccountId, email, imageUrl } = inputDto
+      const { nickname, vendor, vendorAccountId, email } = inputDto
 
       const checkUserExists =
         await this.userRepository.findByVendorAndVendorAccountId(
@@ -26,13 +26,19 @@ export class Signup {
         )
 
       if (!checkUserExists) {
-        const user = await this.userRepository.createUser(
-          nickname,
-          vendor,
-          vendorAccountId,
-          email,
-          imageUrl
-        )
+        // const user = await this.userRepository.createUser(
+        //   nickname,
+        //   vendor,
+        //   vendorAccountId,
+        //   email,
+        // )
+
+        // const user = new User({
+        //   nickname,
+        //   vendor,
+        //   vendorAccountId,
+        //   email,
+        // })
 
         if (user) {
           const accessToken = await generateToken(
@@ -44,15 +50,16 @@ export class Signup {
               expiresIn: '15d',
             }
           )
-
-          const outputDto: SignupOutputDto = {
+          //this.userRepo.save(user)
+          const outputDto: SocialSignupOutputDto = {
             user: user,
             accessToken: accessToken,
           }
+
           return outputDto
         }
       } else {
-        return new SignupError.UserExists()
+        return new SocialSignupError.UserExists()
       }
     } catch (error) {
       throw new Error()

@@ -34,13 +34,13 @@ export class UserRepository
     vendorAccountId: string,
     email: string,
     image_url: string
-  ): Promise<User | null > {
+  ): Promise<User | null> {
     const user = this.create({
       nickname: nickname,
       vendor: vendor,
       vendorAccountId: vendorAccountId,
       email: email,
-      image_url: image_url
+      image_url: image_url,
     })
     const createdUser = await this.save(user)
     return createdUser ? createdUser : null
@@ -51,7 +51,8 @@ export class UserRepository
   }
 
   public async save(t: User): Promise<any> {
-    throw new Error('Method not implemented.')
+    userModel = UserMapper.toPersistence(User)
+    this.save(userModel)
   }
 
   public async delete(t: User): Promise<any> {
