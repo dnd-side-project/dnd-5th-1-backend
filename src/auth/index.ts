@@ -1,11 +1,14 @@
 import express from 'express'
-import appleAuthRouter from './apple'
-import { kakaoAuthRouter } from './kakao/index'
+import { signinWithAppleController, signupController } from './register-login'
 
 const authRouter = express.Router()
 
-// authRouter.use('/token')
-authRouter.use('/apple', appleAuthRouter)
-authRouter.use('/kakao', kakaoAuthRouter)
+authRouter.post('/signin', (request, response) =>
+  signinWithAppleController.execute(request, response)
+)
+
+authRouter.post('/signup', (request, response) =>
+  signupController.execute(request, response)
+)
 
 export default authRouter

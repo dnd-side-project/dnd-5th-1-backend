@@ -1,34 +1,31 @@
 import { BaseController } from 'core/infra/base-controller'
-import { SigninWithApple } from './signin-with-apple'
-import { UseCaseError } from '../../../core/infra/user-case-error'
-import {
-  SigninWithAppleInputDto,
-  SigninWithAppleOutputDto,
-} from './signin-wth-apple-dto'
-import * as SigninWithAppleErrors from './signin-with-apple-error'
+import { UseCaseError } from '../../core/infra/user-case-error'
+import { UserExists } from './signup-error'
+import { SignupInputDto, SignupOutputDto } from './signup-dto'
+import { Signup } from './signup'
 
-export class SigninWithAppleController extends BaseController {
-  private useCase: SigninWithApple
+export class SignupController extends BaseController {
+  private useCase: Signup
 
-  constructor(useCase: SigninWithApple) {
+  constructor(useCase: Signup) {
     super()
     this.useCase = useCase
   }
 
   async executeImpl(): Promise<any> {
-    const dto: SigninWithAppleInputDto = this.req
-      .body as SigninWithAppleInputDto
+    const dto: SignupInputDto = this.req
+      .body as SignupInputDto
 
     try {
       const result = await this.useCase.execute(dto)
 
       if (result instanceof UseCaseError) {
         switch (result.constructor) {
-          case SigninWithAppleErrors.UserNotFound:
-            return this.notFound(result.message)
+          case UserExists:
+            return this.alreadyExists(result.message)
         }
       } else {
-        const outputDto: SigninWithAppleOutputDto = result
+        const outputDto: SignupOutputDto = result
 
         this.res.set({
           'Content-Type': 'application/json',

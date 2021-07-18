@@ -28,6 +28,24 @@ export class UserRepository
     return user ? user : null
   }
 
+  public async createUser(
+    nickname: string,
+    vendor: string,
+    vendorAccountId: string,
+    email: string,
+    image_url: string
+  ): Promise<User | null > {
+    const user = this.create({
+      nickname: nickname,
+      vendor: vendor,
+      vendorAccountId: vendorAccountId,
+      email: email,
+      image_url: image_url
+    })
+    const createdUser = await this.save(user)
+    return createdUser ? createdUser : null
+  }
+
   public async exists(user: User): Promise<boolean> {
     return false
   }
