@@ -1,4 +1,4 @@
-import { User } from 'users/domain/user'
+import { User } from 'infra/models/user-model'
 
 export interface SocialSignupInputDto {
   vendor: string
