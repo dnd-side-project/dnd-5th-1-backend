@@ -1,12 +1,12 @@
 import { User } from 'users/domain/user'
 
-export interface SigninWithKakaoInputDto {
+export interface SocialSigninInputDto {
   vendor: string
   vendorAccountId: string
-  email: string
+  email?: string
 }
 
-export interface SigninWithKakaoOutputDto {
+export interface SocialSigninOutputDto {
   user: User
   accessToken: string
 }

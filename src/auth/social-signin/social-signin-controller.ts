@@ -1,34 +1,33 @@
 import { BaseController } from 'core/infra/base-controller'
-import { SigninWithApple } from './signin-with-apple'
+import { SocialSignin } from './social-signin'
 import { UseCaseError } from '../../core/infra/user-case-error'
 import {
-  SigninWithAppleInputDto,
-  SigninWithAppleOutputDto,
-} from './signin-wth-apple-dto'
-import * as SigninWithAppleErrors from './signin-with-apple-error'
+  SocialSigninInputDto,
+  SocialSigninOutputDto,
+} from './social-signin-dto'
+import * as SocialSigninErrors from './social-signin-error'
 
-export class SigninWithAppleController extends BaseController {
-  private useCase: SigninWithApple
+export class SocialSigninController extends BaseController {
+  private useCase: SocialSignin
 
-  constructor(useCase: SigninWithApple) {
+  constructor(useCase: SocialSignin) {
     super()
     this.useCase = useCase
   }
 
   async executeImpl(): Promise<any> {
-    const dto: SigninWithAppleInputDto = this.req
-      .body as SigninWithAppleInputDto
+    const dto: SocialSigninInputDto = this.req.body as SocialSigninInputDto
 
     try {
       const result = await this.useCase.execute(dto)
 
       if (result instanceof UseCaseError) {
         switch (result.constructor) {
-          case SigninWithAppleErrors.UserNotFound:
+          case SocialSigninErrors.UserNotFound:
             return this.notFound(result.message)
         }
       } else {
-        const outputDto: SigninWithAppleOutputDto = result
+        const outputDto: SocialSigninOutputDto = result
 
         this.res.set({
           'Content-Type': 'application/json',
