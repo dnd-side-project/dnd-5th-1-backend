@@ -5,3 +5,9 @@ export class UserNotFound extends UseCaseError {
     super('User Not Found')
   }
 }
+
+export class InvalidVendor extends UseCaseError {
+  constructor() {
+    super('Invalid Vendor, please provide either "Kakao" or "Apple"')
+  }
+}
