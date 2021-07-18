@@ -19,7 +19,6 @@ import {
 
 @Entity('user', { schema: 'app-db' })
 export class User {
-
   @PrimaryGeneratedColumn('uuid')
   id!: string
 
@@ -27,31 +26,30 @@ export class User {
     name: 'profile_url',
     nullable: false,
     comment: 'user profile image',
-    length: 200
+    length: 200,
   })
   image_url!: string
 
   @Column('varchar', {
-    name: 'user_name',
+    name: 'nickname',
     nullable: false,
-    comment: 'user name',
-    length: 200
+    comment: 'user nickname',
+    length: 200,
   })
-  name!: string
-    
-    
-    @Column('varchar', {
+  nickname!: string
+
+  @Column('varchar', {
     name: 'email',
     nullable: false,
     comment: 'email',
-    length: 200
+    length: 200,
   })
   email!: string
 
   @CreateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
-    comment: 'created date'
+    comment: 'created date',
   })
   createdAt!: Date
 
@@ -59,8 +57,7 @@ export class User {
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
     onUpdate: 'CURRENT_TIMESTAMP(6)',
-    comment: 'updated date'
+    comment: 'updated date',
   })
   updatedAt!: Date
-
 }

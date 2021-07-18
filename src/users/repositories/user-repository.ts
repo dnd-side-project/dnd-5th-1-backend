@@ -3,16 +3,29 @@ import { User } from 'users/domain/user'
 import { IUserRepository } from 'users/repositories/user-repository.interface'
 
 @EntityRepository(User)
-export class UserRepository extends Repository<User> implements IUserRepository {
-
+export class UserRepository
+  extends Repository<User>
+  implements IUserRepository
+{
   public async findUserById(userId: string): Promise<User | null> {
     const user = await this.findOne({
-      id: userId
+      id: userId,
     })
     if (!user) {
       return null
     }
     return user
+  }
+
+  public async findByVendorAndVendorAccountId(
+    vendor: string,
+    vendorAccountId: string
+  ): Promise<User | null> {
+    const user = await this.findOne({
+      where: [{ vendor: vendor }, { vendor_account_id: vendorAccountId }],
+    })
+
+    return user ? user : null
   }
 
   public async exists(user: User): Promise<boolean> {

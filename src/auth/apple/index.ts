@@ -1,9 +1,10 @@
 import express from 'express'
-import { appleCheck, appleSignIn } from './apple.auth'
+import { signinWithAppleController } from './singin-with-apple'
 
 const appleAuthRouter = express.Router()
 
-appleAuthRouter.post('/apple/signin', appleSignIn)
-appleAuthRouter.get('/apple/check', appleCheck)
+appleAuthRouter.post('/apple/signin', (request, response) =>
+  signinWithAppleController.execute(request, response)
+)
 
 export default appleAuthRouter

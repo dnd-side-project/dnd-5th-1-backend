@@ -32,5 +32,6 @@
   "scripts": {
     "dev": "nodemon --exec ts-node -r tsconfig-paths/register  src/index.ts",
     "build": "tsc -p ."
-  }
+  },
+  "repository": "https://github.com/sjunhong/dnd-5th-1-backend.git"
 }
