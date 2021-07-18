@@ -1,61 +1,71 @@
 import { EntityRepository, Repository } from 'typeorm'
-import { User } from 'users/domain/user'
+import { UserModel } from 'infra/models/user-model'
 import { IUserRepository } from 'users/repositories/user-repository.interface'
+import { User } from 'users/domain/user'
+import { UserMapper } from 'users/mappers/user-mapper'
+import { Vendor } from 'users/domain/vendor'
+import { UniqueEntityId } from '../../core/infra/unique-entity-id'
 
-@EntityRepository(User)
+@EntityRepository(UserModel)
 export class UserRepository
-  extends Repository<User>
+  extends Repository<UserModel>
   implements IUserRepository
 {
-  public async findUserById(userId: string): Promise<User | null> {
-    const user = await this.findOne({
-      id: userId,
+  public async findUserById(userId: UniqueEntityId): Promise<User | null> {
+    const user = await super.findOne({
+      id: userId.toString(),
     })
-    if (!user) {
-      return null
-    }
-    return user
+    return user ? UserMapper.toDomain(user) : null
   }
 
   public async findByVendorAndVendorAccountId(
-    vendor: string,
+    vendor: Vendor,
     vendorAccountId: string
   ): Promise<User | null> {
-    const user = await this.findOne({
-      where: [{ vendor: vendor }, { vendor_account_id: vendorAccountId }],
+    const user = await super.findOne({
+      where: [{ vendor: vendor.value }, { vendor_account_id: vendorAccountId }],
     })
 
-    return user ? user : null
+    return user ? UserMapper.toDomain(user) : null
   }
 
-  public async createUser(
-    nickname: string,
-    vendor: string,
-    vendorAccountId: string,
-    email: string,
-    image_url: string
-  ): Promise<User | null> {
-    const user = this.create({
-      nickname: nickname,
-      vendor: vendor,
-      vendorAccountId: vendorAccountId,
-      email: email,
-      image_url: image_url,
-    })
-    const createdUser = await this.save(user)
-    return createdUser ? createdUser : null
+  public async createAndSave(user: User): Promise<User | null> {
+    const createdUser = await super.save(UserMapper.toPersistence(user))
+    return createdUser ? UserMapper.toDomain(createdUser) : null
   }
 
   public async exists(user: User): Promise<boolean> {
-    return false
+    const userExists = await this.findByVendorAndVendorAccountId(
+      user.vendor,
+      user.vendorAccountId
+    )
+    return userExists ? true : false
   }
 
-  public async save(t: User): Promise<any> {
-    userModel = UserMapper.toPersistence(User)
-    this.save(userModel)
+  public async saveEntity(user: User): Promise<void> {
+    const exists = await this.exists(user)
+    try {
+      if (!exists) {
+        await this.createAndSave(user)
+      } else {
+        await super.save(UserMapper.toPersistence(user))
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  public async delete(t: User): Promise<any> {
-    throw new Error('Method not implemented.')
+  public async deleteEntity(user: User): Promise<void> {
+    const exists = await this.findByVendorAndVendorAccountId(
+      user.vendor,
+      user.vendorAccountId
+    )
+    try {
+      if (exists) {
+        await super.remove(UserMapper.toPersistence(exists))
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
