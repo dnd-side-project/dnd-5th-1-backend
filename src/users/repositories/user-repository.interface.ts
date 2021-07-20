@@ -4,10 +4,10 @@ import { User } from 'users/domain/user'
 import { Vendor } from 'users/domain/vendor'
 
 export interface IUserRepository extends Repository<User> {
-  findUserById(userId: UniqueEntityId): Promise<User | null>
+  findUserById(userId: UniqueEntityId): User | null
   findByVendorAndVendorAccountId(
     vendor: Vendor,
     vendorAccountId: string
-  ): Promise<User | null>
-  createAndSave(user: User): Promise<User | null>
+  ): User | null
+  createAndSave(user: User): User | null
 }

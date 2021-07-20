@@ -25,15 +25,14 @@ export class SocialSignup {
 
   public async execute(inputDto: SocialSignupInputDto): Promise<Response> {
     try {
-      const { vendorAccountId } = inputDto
-
       const nickname = new Nickname(inputDto.nickname)
+      const email = inputDto.email ? inputDto.email : ''
       const imageUrl = new ImageUrl()
       if (!Vendor.isVendor(inputDto.vendor)) {
         return new SocialSignupError.InvalidVendor()
       }
       const vendor = new Vendor(inputDto.vendor as VendorType)
-      const email = inputDto.email ? inputDto.email : ''
+      const vendorAccountId: string = inputDto.vendorAccountId
 
       const userExists =
         await this.userRepository.findByVendorAndVendorAccountId(
@@ -70,13 +69,14 @@ export class SocialSignup {
 
           return outputDto
         } else {
-          throw new Error()
+          throw new Error('User Creation Failed')
         }
       } else {
         return new SocialSignupError.UserExists()
       }
     } catch (error) {
-      throw new Error()
+      console.log(error)
+      throw new Error('Unexpected Error')
     }
   }
 }
