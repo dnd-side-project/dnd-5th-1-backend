@@ -32,6 +32,8 @@ export default class Server {
   private setup(): void {
     getConnection()
     this.app.use(cors(corsOption))
+    this.app.use(express.json())
+    this.app.use(express.urlencoded({ extended: true }))
     this.app.get('/health', (req, res) => {
       return res.send('server healthy')
     })

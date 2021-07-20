@@ -11,58 +11,62 @@ export class UserRepository
   extends Repository<UserModel>
   implements IUserRepository
 {
-  public async findUserById(userId: UniqueEntityId): Promise<User | null> {
-    const user = await super.findOne({
+  findUserById(userId: UniqueEntityId): User | null {
+    const user = this.findOne({
       id: userId.toString(),
     })
-    return user ? UserMapper.toDomain(user) : null
+    return user instanceof UserModel ? UserMapper.toDomain(user) : null
   }
 
-  public async findByVendorAndVendorAccountId(
+  findByVendorAndVendorAccountId(
     vendor: Vendor,
     vendorAccountId: string
-  ): Promise<User | null> {
-    const user = await super.findOne({
+  ): User | null {
+    const user = this.findOne({
       where: [{ vendor: vendor.value }, { vendor_account_id: vendorAccountId }],
     })
 
-    return user ? UserMapper.toDomain(user) : null
+    return user instanceof UserModel ? UserMapper.toDomain(user) : null
   }
 
-  public async createAndSave(user: User): Promise<User | null> {
-    const createdUser = await super.save(UserMapper.toPersistence(user))
-    return createdUser ? UserMapper.toDomain(createdUser) : null
+  createAndSave(user: User): User | null {
+    const createdUser = this.save(UserMapper.toPersistence(user))
+    console.log(`User create and save result: ${createdUser}`)
+    return createdUser instanceof UserModel
+      ? UserMapper.toDomain(createdUser)
+      : null
   }
 
-  public async exists(user: User): Promise<boolean> {
-    const userExists = await this.findByVendorAndVendorAccountId(
+  exists(user: User): boolean {
+    const userExists = this.findByVendorAndVendorAccountId(
       user.vendor,
       user.vendorAccountId
     )
+    console.log(`User find by Vendor result: ${userExists}`)
     return userExists ? true : false
   }
 
-  public async saveEntity(user: User): Promise<void> {
-    const exists = await this.exists(user)
+  saveEntity(user: User): void {
+    const exists = this.exists(user)
     try {
       if (!exists) {
-        await this.createAndSave(user)
+        this.createAndSave(user)
       } else {
-        await super.save(UserMapper.toPersistence(user))
+        this.save(UserMapper.toPersistence(user))
       }
     } catch (error) {
       console.log(error)
     }
   }
 
-  public async deleteEntity(user: User): Promise<void> {
-    const exists = await this.findByVendorAndVendorAccountId(
+  deleteEntity(user: User): void {
+    const exists = this.findByVendorAndVendorAccountId(
       user.vendor,
       user.vendorAccountId
     )
     try {
       if (exists) {
-        await super.remove(UserMapper.toPersistence(exists))
+        this.remove(UserMapper.toPersistence(exists))
       }
     } catch (error) {
       console.log(error)

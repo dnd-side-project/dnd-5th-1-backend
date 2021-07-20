@@ -4,7 +4,7 @@ import {
   createConnection,
   getConnectionManager,
 } from 'typeorm'
-import { User } from 'infra/models/user-model'
+import { UserModel } from 'infra/models/user-model'
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -37,7 +37,7 @@ export const getConnection = async () => {
       password: process.env.DB_PASS,
       bigNumberStrings: false,
       charset: 'utf8mb4_unicode_ci',
-      entities: [User],
+      entities: [UserModel],
       synchronize: true,
     }
 

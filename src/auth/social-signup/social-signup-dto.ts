@@ -1,10 +1,10 @@
-import { User } from 'infra/models/user-model'
+import { User } from 'users/domain/user'
 
 export interface SocialSignupInputDto {
   vendor: string
   vendorAccountId: string
-  email?: string
   nickname: string
+  email?: string
 }
 
 export interface SocialSignupOutputDto {
