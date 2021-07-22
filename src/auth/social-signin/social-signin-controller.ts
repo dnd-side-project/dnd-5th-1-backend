@@ -6,13 +6,12 @@ import {
   SocialSigninOutputDto,
 } from './social-signin-dto'
 import * as SocialSigninErrors from './social-signin-error'
+import { autoInjectable } from 'tsyringe'
 
+@autoInjectable()
 export class SocialSigninController extends BaseController {
-  private useCase: SocialSignin
-
-  constructor(useCase: SocialSignin) {
+  constructor(private useCase: SocialSignin) {
     super()
-    this.useCase = useCase
   }
 
   async executeImpl(): Promise<any> {

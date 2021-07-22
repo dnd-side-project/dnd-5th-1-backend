@@ -10,7 +10,7 @@ export class UserMapper {
     return {
       nickname: user.nickname.value,
       email: user.email,
-      image_url: user.imageUrl,
+      imageUrl: user.imageUrl.value,
       vendor: user.vendor.value,
       vendorAccountId: user.vendorAccountId,
     }
@@ -18,7 +18,7 @@ export class UserMapper {
 
   public static toDomain(userModel: UserModel): User {
     const nickname = new Nickname(userModel.nickname)
-    const imageUrl = new ImageUrl(userModel.image_url)
+    const imageUrl = new ImageUrl(userModel.imageUrl)
     const vendor = new Vendor(userModel.vendor as VendorType)
 
     const user = new User(

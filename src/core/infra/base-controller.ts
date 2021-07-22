@@ -22,7 +22,7 @@ export abstract class BaseController {
   }
 
   public ok<T>(res: express.Response, statusCode: number, dto?: T) {
-    if (!dto) {
+    if (dto) {
       return res.status(statusCode).json(dto)
     } else {
       return res.sendStatus(statusCode)

@@ -6,18 +6,18 @@ import {
   SocialSigninOutputDto as SocialSigninOutputDto,
 } from './social-signin-dto'
 import { Vendor, VendorType } from 'users/domain/vendor'
+import { inject, injectable } from 'tsyringe'
 
 type Response =
   | SocialSigninOutputDto
   | SocialSigninErrors.UserNotFound
   | SocialSigninErrors.InvalidVendor
 
+@injectable()
 export class SocialSignin {
-  private userRepository: IUserRepository
-
-  constructor(userRepository: IUserRepository) {
-    this.userRepository = userRepository
-  }
+  constructor(
+    @inject('IUserRepository') private userRepository: IUserRepository
+  ) {}
 
   public async execute(inputDto: SocialSigninInputDto): Promise<Response> {
     try {
@@ -26,6 +26,7 @@ export class SocialSignin {
         return new SocialSigninErrors.InvalidVendor()
       }
       const vendor = new Vendor(inputDto.vendor as VendorType)
+      console.log(`signin vendor: ${JSON.stringify(vendor, null, 4)}`)
 
       const alreadyCreatedUser =
         await this.userRepository.findByVendorAndVendorAccountId(
@@ -33,6 +34,9 @@ export class SocialSignin {
           vendorAccountId
         )
 
+      console.log(
+        `signin alreadyCreatedUser: ${JSON.stringify(vendor, null, 4)}`
+      )
       if (alreadyCreatedUser) {
         const user = alreadyCreatedUser
         const accessToken = await generateToken(
