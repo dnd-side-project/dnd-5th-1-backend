@@ -38,13 +38,16 @@ export const getConnection = async () => {
       bigNumberStrings: false,
       charset: 'utf8mb4_unicode_ci',
       entities: [UserModel],
-      synchronize: true,
+      synchronize: false,
     }
 
     connection = await createConnection(connectionOptions)
-    console.log('Database connected!')
     if (!connection.isConnected) {
+      console.log('Database connecttion failed. retry')
       connection = await connection.connect()
+    } else {
+      console.log('Database connected')
     }
   }
+  return connection
 }

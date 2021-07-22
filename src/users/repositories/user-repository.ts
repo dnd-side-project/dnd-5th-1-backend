@@ -1,72 +1,81 @@
-import { EntityRepository, Repository } from 'typeorm'
+import { EntityRepository, getRepository, Repository } from 'typeorm'
 import { UserModel } from 'infra/models/user-model'
 import { IUserRepository } from 'users/repositories/user-repository.interface'
 import { User } from 'users/domain/user'
 import { UserMapper } from 'users/mappers/user-mapper'
 import { Vendor } from 'users/domain/vendor'
 import { UniqueEntityId } from '../../core/infra/unique-entity-id'
+import { singleton } from 'tsyringe'
 
+@singleton()
 @EntityRepository(UserModel)
-export class UserRepository
-  extends Repository<UserModel>
-  implements IUserRepository
-{
-  findUserById(userId: UniqueEntityId): User | null {
-    const user = this.findOne({
+export class UserRepository implements IUserRepository {
+  private ormRepository: Repository<UserModel>
+
+  constructor() {
+    this.ormRepository = getRepository(UserModel)
+  }
+
+  public async findUserById(userId: UniqueEntityId): Promise<User | null> {
+    const user = await this.ormRepository.findOne({
       id: userId.toString(),
     })
-    return user instanceof UserModel ? UserMapper.toDomain(user) : null
+    return user ? UserMapper.toDomain(user) : null
   }
 
-  findByVendorAndVendorAccountId(
+  public async findByVendorAndVendorAccountId(
     vendor: Vendor,
     vendorAccountId: string
-  ): User | null {
-    const user = this.findOne({
-      where: [{ vendor: vendor.value }, { vendor_account_id: vendorAccountId }],
+  ): Promise<User | null> {
+    const user = await this.ormRepository.findOne({
+      where: [{ vendor: vendor.value, vendorAccountId: vendorAccountId }],
     })
 
-    return user instanceof UserModel ? UserMapper.toDomain(user) : null
+    return user ? UserMapper.toDomain(user) : null
   }
 
-  createAndSave(user: User): User | null {
-    const createdUser = this.save(UserMapper.toPersistence(user))
-    console.log(`User create and save result: ${createdUser}`)
-    return createdUser instanceof UserModel
-      ? UserMapper.toDomain(createdUser)
-      : null
+  public async createAndSave(user: User): Promise<User | null> {
+    const createdUser = await this.ormRepository.save(
+      UserMapper.toPersistence(user)
+    )
+    console.log(
+      `User create and save result: ${JSON.stringify(createdUser, null, 4)}`
+    )
+    return createdUser ? UserMapper.toDomain(createdUser) : null
   }
 
-  exists(user: User): boolean {
-    const userExists = this.findByVendorAndVendorAccountId(
+  public async exists(user: User): Promise<boolean> {
+    const userExists = await this.findByVendorAndVendorAccountId(
       user.vendor,
       user.vendorAccountId
     )
-    console.log(`User find by Vendor result: ${userExists}`)
+    console.log(
+      `User find by Vendor result: ${JSON.stringify(userExists, null, 4)}`
+    )
     return userExists ? true : false
   }
 
-  saveEntity(user: User): void {
-    const exists = this.exists(user)
+  public async saveEntity(user: User): Promise<void> {
+    const exists = await this.exists(user)
     try {
       if (!exists) {
         this.createAndSave(user)
       } else {
-        this.save(UserMapper.toPersistence(user))
+        this.ormRepository.save(UserMapper.toPersistence(user))
       }
     } catch (error) {
       console.log(error)
     }
   }
 
-  deleteEntity(user: User): void {
-    const exists = this.findByVendorAndVendorAccountId(
+  public async deleteEntity(user: User): Promise<void> {
+    const exists = await this.findByVendorAndVendorAccountId(
       user.vendor,
       user.vendorAccountId
     )
     try {
       if (exists) {
-        this.remove(UserMapper.toPersistence(exists))
+        this.ormRepository.remove(UserMapper.toPersistence(exists))
       }
     } catch (error) {
       console.log(error)

@@ -1,10 +1,7 @@
 import express from 'express'
-import dotenv from 'dotenv'
 import cors, { CorsOptions } from 'cors'
 import authRouter from './auth'
 import { getConnection } from './infra/database'
-
-dotenv.config()
 
 const PORT = parseInt(process.env.PORT!, 10)
 const corsOption: CorsOptions = {
@@ -25,12 +22,12 @@ export default class Server {
   public app: express.Application
 
   constructor() {
+    getConnection()
     this.app = express()
     this.setup()
   }
 
   private setup(): void {
-    getConnection()
     this.app.use(cors(corsOption))
     this.app.use(express.json())
     this.app.use(express.urlencoded({ extended: true }))

@@ -6,18 +6,10 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
-@Entity('UserModel', { schema: 'app-db' })
+@Entity('User', { schema: 'app-db' })
 export class UserModel {
   @PrimaryGeneratedColumn('uuid')
   id!: string
-
-  @Column('varchar', {
-    name: 'profile_url',
-    nullable: false,
-    comment: 'user profile image',
-    length: 200,
-  })
-  image_url!: string
 
   @Column('varchar', {
     name: 'nickname',
@@ -36,6 +28,14 @@ export class UserModel {
   email!: string
 
   @Column('varchar', {
+    name: 'image_url',
+    nullable: false,
+    comment: 'user profile image',
+    length: 200,
+  })
+  imageUrl!: string
+
+  @Column('varchar', {
     name: 'vendor',
     nullable: false,
     comment: 'provider name',
@@ -44,7 +44,7 @@ export class UserModel {
   vendor!: string
 
   @Column('varchar', {
-    name: 'vendorAccountId',
+    name: 'vendor_account_id',
     nullable: false,
     comment: 'provided user unique key',
     length: 200,

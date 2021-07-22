@@ -6,13 +6,12 @@ import {
   SocialSignupOutputDto,
 } from './social-signup-dto'
 import { SocialSignup } from './social-signup'
+import { autoInjectable } from 'tsyringe'
 
+@autoInjectable()
 export class SocialSignupController extends BaseController {
-  private useCase: SocialSignup
-
-  constructor(useCase: SocialSignup) {
+  constructor(private useCase: SocialSignup) {
     super()
-    this.useCase = useCase
   }
 
   async executeImpl(): Promise<any> {
@@ -37,8 +36,8 @@ export class SocialSignupController extends BaseController {
         })
 
         return this.ok(this.res, 200, {
-          profilePictureImage: outputDto.user.imageUrl,
-          nickname: outputDto.user.nickname,
+          profilePictureImage: outputDto.user.imageUrl.value,
+          nickname: outputDto.user.nickname.value,
         })
       }
     } catch (error: unknown) {

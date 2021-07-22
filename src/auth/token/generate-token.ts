@@ -1,6 +1,6 @@
 import jwt, { SignOptions } from 'jsonwebtoken'
 
-const { JWT_SECRET } = process.env
+const JWT_SECRET = process.env.JWT_SECRET
 
 export async function generateToken(
   payload: string | Record<string, unknown> | Buffer,

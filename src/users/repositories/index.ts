@@ -1,5 +1,12 @@
-import { UserRepository } from './user-repository'
+// import { UserRepository } from './user-repository'
+// import { getConnection, getCustomRepository } from 'typeorm'
+// import { getConnection } from 'infra/database'
 
-const userRepository = new UserRepository()
+// const connection = async ()=> {
+//   return await getConnection()
+// }
+// const connection = await getConnection()
 
-export { userRepository }
+// const userRepository = await connection().getCustomRepository(UserRepository)
+// // const userRepository = getCustomRepository(UserRepository)
+// export { userRepository }

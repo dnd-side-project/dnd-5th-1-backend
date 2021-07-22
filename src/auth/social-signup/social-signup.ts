@@ -10,24 +10,25 @@ import { ImageUrl } from 'users/domain/image-url'
 import { Vendor } from 'users/domain/vendor'
 import { VendorType } from '../../users/domain/vendor'
 import { User } from 'users/domain/user'
+import { inject, injectable } from 'tsyringe'
 
 type Response =
   | SocialSignupOutputDto
   | SocialSignupError.UserExists
   | SocialSignupError.InvalidVendor
 
+@injectable()
 export class SocialSignup {
-  private userRepository: IUserRepository
-
-  constructor(userRepository: IUserRepository) {
-    this.userRepository = userRepository
-  }
+  constructor(
+    @inject('IUserRepository') private userRepository: IUserRepository
+  ) {}
 
   public async execute(inputDto: SocialSignupInputDto): Promise<Response> {
     try {
       const nickname = new Nickname(inputDto.nickname)
       const email = inputDto.email ? inputDto.email : ''
       const imageUrl = new ImageUrl()
+      console.log(`imageUrl: ${imageUrl.value}`)
       if (!Vendor.isVendor(inputDto.vendor)) {
         return new SocialSignupError.InvalidVendor()
       }
@@ -41,6 +42,7 @@ export class SocialSignup {
         )
 
       if (!userExists) {
+        console.log('user not exist, create one')
         const user = await this.userRepository.createAndSave(
           new User({
             nickname,
@@ -50,6 +52,7 @@ export class SocialSignup {
             vendorAccountId,
           })
         )
+        console.log(`User createAndSave result: ${user}`)
 
         if (user) {
           const accessToken = await generateToken(
