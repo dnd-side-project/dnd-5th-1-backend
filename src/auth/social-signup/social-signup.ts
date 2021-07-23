@@ -34,6 +34,7 @@ export class SocialSignup {
       }
       const vendor = new Vendor(inputDto.vendor as VendorType)
       const vendorAccountId: string = inputDto.vendorAccountId
+      const { nickname, vendor, vendorAccountId, email, imageUrl } = inputDto
 
       const userExists =
         await this.userRepository.findByVendorAndVendorAccountId(
@@ -53,6 +54,14 @@ export class SocialSignup {
           })
         )
         console.log(`User createAndSave result: ${user}`)
+      if (!checkUserExists) {
+        const user = await this.userRepository.createUser(
+          nickname,
+          vendor,
+          vendorAccountId,
+          email,
+          imageUrl
+        )
 
         if (user) {
           const accessToken = await generateToken(
@@ -73,6 +82,9 @@ export class SocialSignup {
           return outputDto
         } else {
           throw new Error('User Creation Failed')
+        }
+        else {
+          throw new Error()
         }
       } else {
         return new SocialSignupError.UserExists()
