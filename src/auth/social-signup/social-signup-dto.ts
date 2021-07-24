@@ -5,9 +5,6 @@ export interface SocialSignupInputDto {
   vendorAccountId: string
   nickname: string
   email?: string
-  email: string
-  nickname: string
-  imageUrl: string
 }
 
 export interface SocialSignupOutputDto {
