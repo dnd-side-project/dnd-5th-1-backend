@@ -81,4 +81,12 @@ export class UserRepository implements IUserRepository {
       console.log(error)
     }
   }
+  // public async save(t: User): Promise<any> {
+  //   userModel = UserMapper.toPersistence(User)
+  //   this.save(userModel)
+  // }
+
+  // public async delete(t: User): Promise<any> {
+  //   throw new Error('Method not implemented.')
+  // }
 }

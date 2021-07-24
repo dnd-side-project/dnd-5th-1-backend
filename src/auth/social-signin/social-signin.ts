@@ -4,6 +4,7 @@ import * as SocialSigninErrors from './social-signin-error'
 import {
   SocialSigninInputDto,
   SocialSigninOutputDto as SocialSigninOutputDto,
+  SocialSigninOutputDto,
 } from './social-signin-dto'
 import { Vendor, VendorType } from 'users/domain/vendor'
 import { inject, injectable } from 'tsyringe'
@@ -18,6 +19,10 @@ export class SocialSignin {
   constructor(
     @inject('IUserRepository') private userRepository: IUserRepository
   ) {}
+
+  constructor(userRepository: IUserRepository) {
+    this.userRepository = userRepository
+  }
 
   public async execute(inputDto: SocialSigninInputDto): Promise<Response> {
     try {

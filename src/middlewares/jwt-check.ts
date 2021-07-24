@@ -20,6 +20,7 @@ export const jwtCheck = async (
     console.log(`JWT verified. Payload: ${JSON.stringify(jwtPayload, null, 4)}`)
     req.user = jwtPayload.userId.value
   } catch (error) {
+
     console.log(`JWT verification error: ${error}`)
     return res.status(401).json({
       message: 'accessToken expired',
