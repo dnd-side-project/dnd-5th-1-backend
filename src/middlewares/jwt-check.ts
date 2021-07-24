@@ -1,5 +1,5 @@
 import express from 'express'
-import { verifyToken } from '../auth/token/verify-token'
+import { verifyToken } from '../lib/token/verify-token'
 
 export const jwtCheck = async (
   req: express.Request,

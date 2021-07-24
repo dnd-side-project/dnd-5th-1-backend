@@ -1,5 +1,5 @@
 import { UniqueEntityId } from 'core/infra/unique-entity-id'
-import { Entity } from '../../core/infra/entity'
+import { Entity } from '../../core/infra/BaseEntity'
 import { Nickname } from './nickname'
 import { ImageUrl } from './image-url'
 import { Vendor } from './vendor'
@@ -40,26 +40,4 @@ export class User extends Entity<UserProps> {
   constructor(props: UserProps, id?: UniqueEntityId) {
     super(props, id)
   }
-  @Column('varchar', {
-    name: 'email',
-    nullable: true,
-    comment: 'email',
-    length: 200,
-  })
-  email!: string
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-    comment: 'created date',
-  })
-  createdAt!: Date
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-    onUpdate: 'CURRENT_TIMESTAMP(6)',
-    comment: 'updated date',
-  })
-  updatedAt!: Date
 }

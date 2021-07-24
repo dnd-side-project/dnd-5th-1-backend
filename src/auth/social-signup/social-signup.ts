@@ -1,4 +1,4 @@
-import { generateToken } from 'auth/token/generate-token'
+import { generateToken } from 'lib/token/generate-token'
 import { IUserRepository } from 'users/repositories/user-repository.interface'
 import * as SocialSignupError from './social-signup-error'
 import {
