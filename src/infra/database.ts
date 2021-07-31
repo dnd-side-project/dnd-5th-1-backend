@@ -5,8 +5,8 @@ import {
   getConnectionManager,
 } from 'typeorm'
 import { UserModel } from 'infra/models/user-model'
-import dotenv from 'dotenv'
-dotenv.config()
+import 'dotenv/config'
+import { PostModel } from './models/post-model'
 
 const connectionManager = getConnectionManager()
 
@@ -37,8 +37,8 @@ export const getConnection = async () => {
       password: process.env.DB_PASS,
       bigNumberStrings: false,
       charset: 'utf8mb4_unicode_ci',
-      entities: [UserModel],
-      synchronize: false,
+      entities: [UserModel, PostModel],
+      synchronize: true,
     }
 
     connection = await createConnection(connectionOptions)

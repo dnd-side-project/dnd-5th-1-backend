@@ -1,5 +1,5 @@
 import { UniqueEntityId } from 'core/infra/unique-entity-id'
-import { Entity } from '../../core/infra/BaseEntity'
+import { BaseEntity } from '../../core/infra/BaseEntity'
 import { Nickname } from './nickname'
 import { ImageUrl } from './image-url'
 import { Vendor } from './vendor'
@@ -12,7 +12,7 @@ interface UserProps {
   vendorAccountId: string
 }
 
-export class User extends Entity<UserProps> {
+export class User extends BaseEntity<UserProps> {
   get id(): UniqueEntityId {
     return this._id
   }
