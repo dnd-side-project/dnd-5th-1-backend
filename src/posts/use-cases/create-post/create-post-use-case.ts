@@ -1,6 +1,9 @@
 import { IPostRepository } from 'posts/repositories/post-repository.interface'
 import * as CreatePostErrors from './create-post-error'
-import { CreatePostInputDto, CreatePostOutputDto } from './create-post-dto'
+import {
+  CreatePostInputDto,
+  CreatePostOutputDto,
+} from '../../controllers/create-post/create-post-dto'
 import { inject, injectable } from 'tsyringe'
 import { LengthCheck } from 'posts/domain/length-check'
 import { Post } from 'posts/domain/post'

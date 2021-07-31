@@ -6,7 +6,7 @@ import { PostModel } from 'infra/models/post-model'
 import { Post } from 'posts/domain/post'
 import { PostMapper } from 'posts/mappers/post-mapper'
 import { ImageModel } from 'infra/models/image-model'
-import * as DeletePostErrors from '../delete-post/delete-post-error'
+import * as DeletePostErrors from '../use-cases/delete-post/delete-post-error'
 
 @singleton()
 @EntityRepository(PostModel)

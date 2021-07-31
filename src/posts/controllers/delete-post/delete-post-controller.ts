@@ -1,7 +1,7 @@
 import { BaseController } from 'core/infra/base-controller'
-import { DeletePost } from './delete-post-use-case'
-import { UseCaseError } from '../../core/infra/user-case-error'
-import * as DeletePostErrors from './delete-post-error'
+import { DeletePost } from '../../use-cases/delete-post/delete-post-use-case'
+import { UseCaseError } from '../../../core/infra/user-case-error'
+import * as DeletePostErrors from '../../use-cases/delete-post/delete-post-error'
 import { DeletePostInputDto } from './delete-post-dto'
 import { autoInjectable } from 'tsyringe'
 

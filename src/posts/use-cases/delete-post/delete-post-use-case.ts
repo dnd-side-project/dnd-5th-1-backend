@@ -1,6 +1,6 @@
 import { IPostRepository } from 'posts/repositories/post-repository.interface'
 import * as DeletePostErrors from './delete-post-error'
-import { DeletePostInputDto } from './delete-post-dto'
+import { DeletePostInputDto } from '../../controllers/delete-post/delete-post-dto'
 import { inject, injectable } from 'tsyringe'
 
 type Response =

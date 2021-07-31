@@ -1,7 +1,7 @@
 import express from 'express'
 import 'reflect-metadata'
 import { container } from 'tsyringe'
-import { CreatePostController } from './create-post/create-post-controller'
+import { CreatePostController } from './controllers/create-post/create-post-controller'
 import { PostRepository } from './repositories/post-repository'
 
 const postRouter = express.Router()

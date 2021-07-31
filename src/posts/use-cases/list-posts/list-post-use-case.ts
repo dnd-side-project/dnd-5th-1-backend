@@ -1,6 +1,9 @@
 import { IPostRepository } from 'posts/repositories/post-repository.interface'
 import * as ListPostErrors from './list-post-error'
-import { ListPostsInputDto, ListPostsOutputDto } from './list-post-dto'
+import {
+  ListPostsInputDto,
+  ListPostsOutputDto,
+} from '../../controllers/list-posts/list-post-dto'
 import { inject, injectable } from 'tsyringe'
 
 type Response = ListPostsOutputDto | ListPostErrors.SomeProperListPostError

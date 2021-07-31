@@ -1,35 +1,29 @@
 import { BaseController } from 'core/infra/base-controller'
-import { UseCaseError } from '../../core/infra/user-case-error'
+import { UseCaseError } from '../../../core/infra/user-case-error'
 import { autoInjectable } from 'tsyringe'
-import { RetrievePost } from './retrieve-post-use-case'
-import {
-  RetirevePostInputDto,
-  RetirevePostOutputDto,
-} from './retrieve-post-dto'
-import * as RetirevePostErrors from './retrieve-post-error'
+import { ListPosts } from '../../use-cases/list-posts/list-post-use-case'
+import { ListPostsInputDto, ListPostsOutputDto } from './list-post-dto'
+import * as ListPostsErrors from '../../use-cases/list-posts/list-post-error'
 
 @autoInjectable()
-export class RetrievePostController extends BaseController {
-  constructor(private useCase: RetrievePost) {
+export class SocialSigninController extends BaseController {
+  constructor(private useCase: ListPosts) {
     super()
   }
 
   async executeImpl(): Promise<any> {
-    const postId = this.req.params.post_id
-    const dto: RetirevePostInputDto = {
-      postId,
-    }
+    const dto: ListPostsInputDto = this.req.body as ListPostsInputDto
 
     try {
       const result = await this.useCase.execute(dto)
 
       if (result instanceof UseCaseError) {
         switch (result.constructor) {
-          case RetirevePostErrors.NotFound:
+          case ListPostsErrors.SomeProperListPostError:
           // return this.someProperResponseFunction in base controller
         }
       } else {
-        const outputDto: RetirevePostOutputDto = result
+        const outputDto: ListPostsOutputDto = result
         return this.ok(this.res, 200, outputDto)
       }
     } catch (error: unknown) {

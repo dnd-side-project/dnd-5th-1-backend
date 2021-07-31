@@ -3,7 +3,7 @@ import * as RetrievePostErrors from './retrieve-post-error'
 import {
   RetirevePostInputDto,
   RetirevePostOutputDto,
-} from './retrieve-post-dto'
+} from '../../controllers/retrieve-post/retrieve-post-dto'
 import { inject, injectable } from 'tsyringe'
 
 type Response = RetirevePostOutputDto | RetrievePostErrors.NotFound

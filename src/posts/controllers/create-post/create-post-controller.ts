@@ -1,8 +1,8 @@
 import { BaseController } from 'core/infra/base-controller'
-import { CreatePost } from './create-post-use-case'
-import { UseCaseError } from '../../core/infra/user-case-error'
+import { CreatePost } from '../../use-cases/create-post/create-post-use-case'
+import { UseCaseError } from '../../../core/infra/user-case-error'
 import { CreatePostInputDto, CreatePostOutputDto } from './create-post-dto'
-import * as CreatePostErrors from './create-post-error'
+import * as CreatePostErrors from '../../use-cases/create-post/create-post-error'
 import { autoInjectable } from 'tsyringe'
 
 @autoInjectable()
