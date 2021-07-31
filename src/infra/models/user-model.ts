@@ -1,15 +1,23 @@
+import { type } from 'os'
 import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  JoinColumn,
+  OneToMany,
 } from 'typeorm'
+import { PostModel } from './post-model'
 
 @Entity('User', { schema: 'app-db' })
 export class UserModel {
   @PrimaryGeneratedColumn('uuid')
   id!: string
+
+  @JoinColumn()
+  @OneToMany(() => PostModel, (post)=> post.user)
+  posts: PostModel[]
 
   @Column('varchar', {
     name: 'nickname',
