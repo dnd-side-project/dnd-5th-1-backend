@@ -18,7 +18,7 @@ export class RetrievePost {
     try {
       const { postId } = inputDto
 
-      const list = await this.postRepository.retrievePost(postId)
+      const list = await this.postRepository.retrieve(postId)
 
       const outputDto: RetirevePostOutputDto = list
       return outputDto
