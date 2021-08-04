@@ -6,7 +6,6 @@ import { PostModel } from 'infra/models/post-model'
 import { Post } from 'posts/domain/post'
 import { PostMapper } from 'posts/mappers/post-mapper'
 import { ImageModel } from 'infra/models/image-model'
-import * as DeletePostErrors from '../use-cases/delete-post/delete-post-error'
 
 @singleton()
 @EntityRepository(PostModel)
@@ -24,21 +23,31 @@ export class PostRepository implements IPostRepository {
   public async findPostById(postId: UniqueEntityId): Promise<Post> {
     const post = await this.ormRepository.findOne({
       where: {
-        id: postId,
+        id: postId.toString(),
       },
     })
 
     return post ? PostMapper.toDomain(post) : null
   }
 
-  public async createAndSave(post: Post): Promise<Post | null> {
-    const createPost = await this.ormRepository.save(
-      PostMapper.toPersistence(post)
+  public create(post: Post): PostModel {
+    const createPost = this.ormRepository.create(
+      PostMapper.toPersistence(post) as PostModel
     )
-    console.log(
-      `Post create and save result: ${JSON.stringify(createPost, null, 4)}`
-    )
-    return createPost ? PostMapper.toDomain(createPost) : null
+    return createPost
+  }
+
+  public async save(postModel: PostModel): Promise<PostModel | null> {
+    const post = await this.ormRepository.save(postModel)
+    console.log(`Post create and save result: ${JSON.stringify(post, null, 4)}`)
+    return post
+  }
+
+  public async saveEntity(post: Post): Promise<Post> {
+    const postObj = await this.create(post)
+    const result = await this.save(postObj)
+
+    return result ? PostMapper.toDomain(result) : null
   }
 
   public async savePostImages(postId: string, images: ImageModel[]) {
@@ -57,43 +66,26 @@ export class PostRepository implements IPostRepository {
     })
   }
 
-  public async exists(post: Post): Promise<boolean> {
-    const postExists = await this.findPostById(post.id)
+  public async retrieve(postId: string): Promise<Post> {
+    const post = await this.ormRepository.findOne(postId)
+    return post ? PostMapper.toDomain(post) : null
+  }
+
+  public async exists(postId: string): Promise<boolean> {
+    const postExists = await this.findPostById(new UniqueEntityId(postId))
     console.log(`Post found by id: ${JSON.stringify(postExists, null, 4)}`)
     return postExists ? true : false
   }
 
-  public async saveEntity(post: Post): Promise<void> {
-    const exists = await this.exists(post)
-    try {
-      if (!exists) {
-        this.createAndSave(post)
-      } else {
-        this.ormRepository.save(PostMapper.toPersistence(post))
-      }
-    } catch (error) {
-      console.log(error)
-    }
+  public async delete(postId: string): Promise<any> {
+    // const isAuthorized = exists.user.id === userId
+    const result = await this.ormRepository.delete(postId)
+    if (result) return true
+    return false
   }
 
-  public async deleteEntity(post: Post): Promise<void> {
-    // deleteEntity in IRepositoryInterface should be editted later.
-    // It needs to have userId as parameter to check if the request is authorized.
-    // But, I don't think this kind of method abstraction is a flexible way to handle various cases.
-  }
-
-  public async delete(postId: string, userId: string): Promise<any> {
-    const exists = await this.ormRepository.findOne(postId)
-    if (exists) {
-      const isAuthorized = exists.user.id === userId
-      if (isAuthorized) {
-        await this.ormRepository.remove(exists)
-        return true
-      } else {
-        return DeletePostErrors.NotAuthorized
-      }
-    } else {
-      return DeletePostErrors.NotFound
-    }
+  public async deleteEntity(postId: string): Promise<boolean> {
+    const deleted = this.delete(postId)
+    return deleted
   }
 }
