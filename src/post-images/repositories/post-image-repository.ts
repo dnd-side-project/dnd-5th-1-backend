@@ -4,7 +4,9 @@ import { PostImage } from '../domain/post-image'
 import { UniqueEntityId } from 'core/infra/unique-entity-id'
 import { PostImageModel } from 'infra/models/post-image-model'
 import { PostImageMapper } from 'post-images/mappers/post-image-mapper'
+import { singleton } from 'tsyringe'
 
+@singleton()
 export class PostImageRepository implements IPostImageRepository {
   private ormRepository: Repository<PostImageModel>
 
