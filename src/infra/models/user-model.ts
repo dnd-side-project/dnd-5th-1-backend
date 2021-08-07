@@ -7,17 +7,25 @@ import {
   UpdateDateColumn,
   JoinColumn,
   OneToMany,
+  OneToOne,
 } from 'typeorm'
 import { PostModel } from './post-model'
+import { VoteModel } from './vote-model'
 
-@Entity('User', { schema: 'app-db' })
+@Entity('users', { schema: 'app-db' })
 export class UserModel {
   @PrimaryGeneratedColumn('uuid')
   id!: string
 
-  @JoinColumn()
-  @OneToMany(() => PostModel, (post)=> post.user)
+  @OneToMany(() => PostModel, (post)=> post.user, {
+    cascade: true
+  })
   posts: PostModel[]
+
+  @OneToMany(() => VoteModel, (vote)=> vote.user, {
+    cascade: true
+  })
+  votes: VoteModel[]
 
   @Column('varchar', {
     name: 'nickname',

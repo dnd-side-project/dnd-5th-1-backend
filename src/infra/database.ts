@@ -4,9 +4,12 @@ import {
   createConnection,
   getConnectionManager,
 } from 'typeorm'
+import { SnakeNamingStrategy } from 'typeorm-snake-naming-strategy'
 import { UserModel } from 'infra/models/user-model'
 import 'dotenv/config'
 import { PostModel } from './models/post-model'
+import { ImageModel } from './models/image-model'
+import { VoteModel } from './models/vote-model'
 
 const connectionManager = getConnectionManager()
 
@@ -36,8 +39,9 @@ export const getConnection = async () => {
       database: process.env.DB_NAME,
       password: process.env.DB_PASS,
       bigNumberStrings: false,
+      namingStrategy: new SnakeNamingStrategy(),
       charset: 'utf8mb4_unicode_ci',
-      entities: [UserModel, PostModel],
+      entities: [UserModel, PostModel, ImageModel, VoteModel],
       synchronize: true,
     }
 

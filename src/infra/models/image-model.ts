@@ -5,10 +5,13 @@ import {
   UpdateDateColumn,
   ManyToOne,
   Column,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm'
 import { PostModel } from './post-model'
+import { VoteModel } from './vote-model'
 
-@Entity('Post', { schema: 'app-db' })
+@Entity('images', { schema: 'app-db' })
 export class ImageModel {
   @PrimaryGeneratedColumn('uuid')
   id: string
@@ -16,22 +19,23 @@ export class ImageModel {
   @ManyToOne(() => PostModel, (post) => post.images)
   post: PostModel
 
+  @JoinColumn()
+  @OneToOne(() => VoteModel, (vote) => vote.image)
+  vote: VoteModel
+
   @Column({
-    name: 'image url',
     comment: 'original image url',
-    nullable: false,
+    default: null
   })
   imageUrl: string
 
   @Column({
-    name: 'thumbnail url',
     comment: 'thumbnail image url',
     nullable: false,
   })
   thumbnailUrl: string
 
   @Column({
-    name: 'picked image',
     comment: 'is picked flag',
     default: false,
   })

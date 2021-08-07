@@ -29,14 +29,14 @@ export class CreatePost {
         return new CreatePostErrors.InvalidDescription()
       }
 
-      const createdPost = await this.postRepository.saveEntity(
+      const createdPost = this.postRepository.create(
         new Post({ title, description, expiredAt })
       )
 
+      await this.postRepository.save(createdPost)
+
       const outputDto: CreatePostOutputDto = {
-        title: createdPost.title,
-        description: createdPost.description,
-        expiredAt: createdPost.expiredAt,
+        postId: createdPost.id.toString()
       }
       return outputDto
     } catch (error) {

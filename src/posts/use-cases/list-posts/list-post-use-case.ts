@@ -16,13 +16,19 @@ export class ListPosts {
 
   public async execute(inputDto: ListPostsInputDto): Promise<Response> {
     try {
-      const { page, limit } = inputDto
+      let { page, limit } = inputDto
+      page = page - 1
+      page = page * limit
+      
+      if (page < 0) page = 0
+      console.log(page, limit)
 
       const list = await this.postRepository.listPosts(page, limit)
 
       const outputDto: ListPostsOutputDto = list
       return outputDto
     } catch (error) {
+      console.log(error)
       throw new Error()
     }
   }

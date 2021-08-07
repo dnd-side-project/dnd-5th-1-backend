@@ -33,7 +33,8 @@
     "mysql": "^2.18.1",
     "ngrok": "^4.0.1",
     "prettier": "^2.3.2",
-    "typeorm": "^0.2.34"
+    "typeorm": "^0.2.34",
+    "typeorm-snake-naming-strategy": "^1.0.2"
   },
   "scripts": {
     "dev": "nodemon --exec ts-node -r tsconfig-paths/register  src/index.ts",

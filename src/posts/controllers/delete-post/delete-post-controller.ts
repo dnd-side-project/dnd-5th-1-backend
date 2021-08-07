@@ -6,16 +6,16 @@ import { DeletePostInputDto } from './delete-post-dto'
 import { autoInjectable } from 'tsyringe'
 
 @autoInjectable()
-export class CreatePostController extends BaseController {
+export class DeletePostController extends BaseController {
   constructor(private useCase: DeletePost) {
     super()
   }
 
   async executeImpl(): Promise<any> {
-    const inputDto: DeletePostInputDto = this.req.body as DeletePostInputDto
-
+    const postId = this.req.params.post_id
+    const deletePostInputDto = { postId }
     try {
-      const result = await this.useCase.execute(inputDto)
+      const result = await this.useCase.execute(deletePostInputDto)
 
       if (result instanceof UseCaseError) {
         switch (result.constructor) {
