@@ -2778,6 +2778,11 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
+typeorm-snake-naming-strategy@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/typeorm-snake-naming-strategy/-/typeorm-snake-naming-strategy-1.0.2.tgz#c0f2adabdf0269157f6dcb4b880c187873833b49"
+  integrity sha512-DzxbnqYvoyXgC8SQupHZ8PUQTdj92a0V4S3qrQru30hCs5W/pY4u7rsvQQsTm1aIbmHvn5L/d3KOT+LdbQdH2A==
+
 typeorm@^0.2.34:
   version "0.2.34"
   resolved "https://registry.yarnpkg.com/typeorm/-/typeorm-0.2.34.tgz#637b3cec2de54ee7f423012b813a2022c0aacc8b"

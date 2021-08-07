@@ -18,7 +18,7 @@ export class DeletePost {
 
   public async execute(inputDto: DeletePostInputDto): Promise<Response> {
     try {
-      const { postId, userId } = inputDto
+      const { postId } = inputDto
       const post = this.postRepository.exists(postId)
       if (!post) {
         return new DeletePostErrors.NotFound()

@@ -7,6 +7,7 @@ export class PostMapper {
     return {
       title: post.title,
       description: post.description,
+      expiredAt: post.expiredAt
     }
   }
 

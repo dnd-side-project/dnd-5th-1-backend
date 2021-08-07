@@ -6,6 +6,7 @@ import { PostModel } from 'infra/models/post-model'
 import { Post } from 'posts/domain/post'
 import { PostMapper } from 'posts/mappers/post-mapper'
 import { ImageModel } from 'infra/models/image-model'
+import { VoteModel } from 'infra/models/vote-model'
 
 @singleton()
 @EntityRepository(PostModel)
@@ -16,8 +17,16 @@ export class PostRepository implements IPostRepository {
     this.ormRepository = getRepository(PostModel)
   }
 
-  listPosts(page: number, limit: number) {
-    this.ormRepository.createQueryBuilder('p').skip(page).take(limit).getMany()
+  public async listPosts(page: number, limit: number) {
+    const list = await this.ormRepository
+    .createQueryBuilder('p')
+    // .innerJoin(VoteModel, "v", "v.postId = p.id")
+    // .addSelect('COUNT(v.id) as participantsNum')
+    .skip(page)
+    .take(limit)
+    .getMany()
+    console.log(list)
+    return list
   }
 
   public async findPostById(postId: UniqueEntityId): Promise<Post> {

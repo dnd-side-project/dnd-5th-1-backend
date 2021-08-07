@@ -9,8 +9,9 @@ import {
 } from 'typeorm'
 import { ImageModel } from './image-model'
 import { UserModel } from './user-model'
+import { VoteModel } from './vote-model'
 
-@Entity('Post', { schema: 'app-db' })
+@Entity('posts', { schema: 'app-db' })
 export class PostModel {
   @PrimaryGeneratedColumn('uuid')
   id: string
@@ -18,8 +19,15 @@ export class PostModel {
   @ManyToOne(() => UserModel, (user) => user.posts)
   user: UserModel
 
-  @OneToMany(() => ImageModel, (image) => image.post)
+  @OneToMany(() => ImageModel, (image) => image.post, {
+    cascade: true
+  })
   images: ImageModel[]
+
+  @OneToMany(() => VoteModel, (vote) => vote.post, {
+    cascade: true
+  })
+  votes: VoteModel[]
 
   @Column('varchar', {
     name: 'expiredAt',
@@ -38,7 +46,7 @@ export class PostModel {
   title: string
 
   @Column('varchar', {
-    name: 'image_url',
+    name: 'description',
     comment: 'post description',
     length: 1000,
     default: null,

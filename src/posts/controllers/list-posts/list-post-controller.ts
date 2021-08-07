@@ -6,13 +6,15 @@ import { ListPostsInputDto, ListPostsOutputDto } from './list-post-dto'
 import * as ListPostsErrors from '../../use-cases/list-posts/list-post-error'
 
 @autoInjectable()
-export class SocialSigninController extends BaseController {
+export class ListPostsController extends BaseController {
   constructor(private useCase: ListPosts) {
     super()
   }
 
   async executeImpl(): Promise<any> {
-    const dto: ListPostsInputDto = this.req.body as ListPostsInputDto
+    const page = Number.parseInt(this.req.query.page as string)
+    const limit = Number.parseInt(this.req.query.limit as string)
+    const dto: ListPostsInputDto = { page, limit }
 
     try {
       const result = await this.useCase.execute(dto)
@@ -24,7 +26,9 @@ export class SocialSigninController extends BaseController {
         }
       } else {
         const outputDto: ListPostsOutputDto = result
-        return this.ok(this.res, 200, outputDto)
+        return this.ok(this.res, 200, {
+          posts: result
+        })
       }
     } catch (error: unknown) {
       if (error instanceof Error) {

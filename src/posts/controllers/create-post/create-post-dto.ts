@@ -7,7 +7,5 @@ export interface CreatePostInputDto {
 }
 
 export interface CreatePostOutputDto {
-  title: string
-  description: string
-  expiredAt: Date
+  postId: string
 }
