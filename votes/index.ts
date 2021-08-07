@@ -10,3 +10,5 @@ voteRouter.post('/', (request, response) => {
   console.log(`request body at router: ${request.body}`)
   container.resolve(CreateVoteController).execute(request, response)
 })
+
+export default voteRouter

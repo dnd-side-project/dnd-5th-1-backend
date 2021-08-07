@@ -16,7 +16,7 @@ export class CreateVoteController extends BaseController {
 
   async executeImpl(): Promise<any> {
     const dto: CreateVoteInputDto = {
-      userId: this.req.body.userId,
+      userId: this.req.user,
       postId: this.req.body.postId,
       postImageID: this.req.body.postImageID,
       category: this.req.body.category,

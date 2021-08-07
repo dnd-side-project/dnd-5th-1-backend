@@ -4,7 +4,9 @@ import { Repository, getRepository } from 'typeorm'
 import { Vote } from '../domain/vote'
 import { IVoteRepository } from './vote-repository.interface'
 import { VoteMapper } from '../mappers/vote-mapper'
+import { singleton } from 'tsyringe'
 
+@singleton()
 export class VoteRepository implements IVoteRepository {
   private ormRepository: Repository<VoteModel>
 

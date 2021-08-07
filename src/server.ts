@@ -4,6 +4,7 @@ import authRouter from './auth'
 import { getConnection } from './infra/database'
 import { jwtCheck } from './middlewares/jwt-check'
 import postRouter from 'posts'
+import voteRouter from '../votes'
 
 const PORT = parseInt(process.env.PORT!, 10)
 const corsOption: CorsOptions = {
@@ -38,6 +39,7 @@ export default class Server {
     })
     this.app.use('/v1/auth', authRouter)
     this.app.use('/v1/posts', postRouter)
+    this.app.use('/v1/votes/', jwtCheck, voteRouter)
     // apply jwtCheck middleware when we need to verify accessToken
     // we DO NOT need jwtCheck on "auth".
     // ex) app.post('/v1/post', jwtCheck)
