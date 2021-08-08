@@ -1,5 +1,18 @@
 import multer from 'multer'
 
+export const imagesUpload = (req, res, next) => {
+  const upload = multer({ storage: storage, fileFilter: fileFilter }).array(
+    'files'
+  )
+  upload(req, res, (err) => {
+    if (err || req.files === undefined) {
+      res.status(406).json({ message: 'image upload failed' })
+      return
+    }
+    next()
+  })
+}
+
 const fileFilter = (req, file, cb) => {
   if (
     file.mimetype.includes('jpeg') ||
@@ -13,5 +26,3 @@ const fileFilter = (req, file, cb) => {
 }
 
 const storage = multer.memoryStorage()
-
-export const imagesUpload = multer({ storage: storage, fileFilter: fileFilter })

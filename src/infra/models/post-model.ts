@@ -7,7 +7,7 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm'
-import { ImageModel } from './image-model'
+import { PostImageModel } from './post-image-model'
 import { UserModel } from './user-model'
 import { VoteModel } from './vote-model'
 
@@ -19,13 +19,11 @@ export class PostModel {
   @ManyToOne(() => UserModel, (user) => user.posts)
   user: UserModel
 
-  @OneToMany(() => ImageModel, (image) => image.post, {
-    cascade: true
-  })
-  images: ImageModel[]
+  @OneToMany(() => PostImageModel, (image) => image.post)
+  images: PostImageModel[]
 
   @OneToMany(() => VoteModel, (vote) => vote.post, {
-    cascade: true
+    cascade: true,
   })
   votes: VoteModel[]
 

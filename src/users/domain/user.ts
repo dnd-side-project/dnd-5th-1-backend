@@ -1,5 +1,5 @@
 import { UniqueEntityId } from 'core/infra/unique-entity-id'
-import { BaseEntity } from '../../core/infra/BaseEntity'
+import { BaseEntity } from '../../core/infra/base-entity'
 import { Nickname } from './nickname'
 import { ImageUrl } from './image-url'
 import { Vendor } from './vendor'
