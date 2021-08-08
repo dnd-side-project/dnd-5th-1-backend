@@ -1,8 +1,9 @@
 const CategoryType = {
-  1: '1',
-  2: '2',
-  3: '3',
-  4: '4',
+  emotion: 'emotion',
+  color: 'color',
+  composition: 'composition',
+  light: 'light',
+  skip: 'skip',
 } as const
 
 export type CategoryType = typeof CategoryType[keyof typeof CategoryType]
@@ -20,10 +21,11 @@ export class Category {
 
   public static isCategory(category: string): boolean {
     return (
-      category === '1' ||
-      category === '2' ||
-      category === '3' ||
-      category === '4'
+      category === 'emotion' ||
+      category === 'color' ||
+      category === 'composition' ||
+      category === 'light' ||
+      category === 'skip'
     )
   }
 }
