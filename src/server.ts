@@ -3,8 +3,10 @@ import cors, { CorsOptions } from 'cors'
 import authRouter from './auth'
 import { getConnection } from './infra/database'
 import postRouter from 'posts'
+import voteRouter from '../votes'
 import imagesRouter from 'post-images'
 import { jwtCheck } from './middlewares/jwt-check'
+
 
 const PORT = parseInt(process.env.PORT!, 10)
 const corsOption: CorsOptions = {
@@ -38,6 +40,7 @@ export default class Server {
       return response.status(200).send('server healthy')
     })
     this.app.use('/v1/auth', authRouter)
+    this.app.use('/v1/votes', jwtCheck, voteRouter)
     this.app.use('/v1/post-images', jwtCheck, imagesRouter)
     this.app.use('/v1/post', postRouter)
   }
