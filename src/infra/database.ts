@@ -8,8 +8,8 @@ import { SnakeNamingStrategy } from 'typeorm-snake-naming-strategy'
 import { UserModel } from 'infra/models/user-model'
 import 'dotenv/config'
 import { PostModel } from './models/post-model'
-import { ImageModel } from './models/image-model'
 import { VoteModel } from './models/vote-model'
+import { PostImageModel } from './models/post-image-model'
 
 const connectionManager = getConnectionManager()
 
@@ -41,7 +41,7 @@ export const getConnection = async () => {
       bigNumberStrings: false,
       namingStrategy: new SnakeNamingStrategy(),
       charset: 'utf8mb4_unicode_ci',
-      entities: [UserModel, PostModel, ImageModel, VoteModel],
+      entities: [UserModel, PostModel, PostImageModel, VoteModel],
       synchronize: true,
     }
 

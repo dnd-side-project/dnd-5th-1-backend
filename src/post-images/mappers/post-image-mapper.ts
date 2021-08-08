@@ -12,6 +12,8 @@ export class PostImageMapper {
       thumbnailUrl: postImage.thumbnailUrl,
       isFirstPick: postImage.isFirstPick,
       extension: postImage.extension.value,
+      width: postImage.width,
+      height: postImage.height,
     }
   }
 

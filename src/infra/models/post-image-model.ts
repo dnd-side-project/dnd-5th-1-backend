@@ -28,7 +28,6 @@ export class PostImageModel {
   @JoinColumn({ name: 'post_id' })
   post: PostModel
 
-  @JoinColumn()
   @OneToOne(() => VoteModel, (vote) => vote.postImage)
   vote: VoteModel
 

@@ -26,7 +26,7 @@ export class CreateVote {
     const category = new Category(inputDto.category as CategoryType)
     const userId = new UniqueEntityId(inputDto.userId)
     const postId = new UniqueEntityId(inputDto.postId)
-    const postImageId = new UniqueEntityId(inputDto.postImageID)
+    const postImageId = new UniqueEntityId(inputDto.postImageId)
 
     const voteAlreadyExists =
       await this.voteRepository.findVoteByUserIdAndPostId(userId, postId)

@@ -20,7 +20,7 @@ export class VoteModel {
   @Column('varchar', {
     name: 'user_id',
     nullable: false,
-    comment: 'post id',
+    comment: 'user id',
     length: 200,
   })
   userId: string
