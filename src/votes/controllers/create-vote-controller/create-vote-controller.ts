@@ -18,7 +18,7 @@ export class CreateVoteController extends BaseController {
     const dto: CreateVoteInputDto = {
       userId: this.req.user,
       postId: this.req.params.post_id,
-      postImageID: this.req.params.image_id,
+      postImageId: this.req.params.post_image_id,
       category: this.req.body.category,
     } as CreateVoteInputDto
 

@@ -19,12 +19,12 @@ export class PostRepository implements IPostRepository {
 
   public async listPosts(page: number, limit: number) {
     const list = await this.ormRepository
-    .createQueryBuilder('p')
-    // .innerJoin(VoteModel, "v", "v.postId = p.id")
-    // .addSelect('COUNT(v.id) as participantsNum')
-    .skip(page)
-    .take(limit)
-    .getMany()
+      .createQueryBuilder('p')
+      // .innerJoin(VoteModel, "v", "v.postId = p.id")
+      // .addSelect('COUNT(v.id) as participantsNum')
+      .skip(page)
+      .take(limit)
+      .getMany()
     console.log(list)
     return list
   }

@@ -17,10 +17,9 @@ export class CreateImagesController extends BaseController {
 
   async executeImpl(): Promise<any> {
     const dto: CreatePostImagesInputDto = {
-      postId: this.req.query.post_id,
+      postId: this.req.params.post_id,
       imageFiles: this.req.files,
-      isFirstPick: this.req.body.isFirstPick,
-      sizes: this.req.body.sizes,
+      metadata: JSON.parse(this.req.body.metadata).metadata,
     } as CreatePostImagesInputDto
 
     console.log(

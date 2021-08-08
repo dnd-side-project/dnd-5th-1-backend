@@ -1,9 +1,9 @@
 const CategoryType = {
-  1: 'emotion',
-  2: 'color',
-  3: 'composition',
-  4: 'light',
-  5: 'skip'
+  emotion: 'emotion',
+  color: 'color',
+  composition: 'composition',
+  light: 'light',
+  skip: 'skip',
 } as const
 
 export type CategoryType = typeof CategoryType[keyof typeof CategoryType]

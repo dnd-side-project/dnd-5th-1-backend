@@ -1,10 +1,17 @@
-type imageSize = number[]
+interface imageSize {
+  width: number
+  height: number
+}
+
+interface imageMetaData {
+  isFirstPick: boolean
+  size: imageSize
+}
 
 export interface CreatePostImagesInputDto {
   postId: string
   imageFiles: Express.Multer.File[]
-  isFirstPick: boolean[]
-  sizes: imageSize[]
+  metadata: imageMetaData[]
 }
 
 export interface CreatePostImagesOutputDto {
