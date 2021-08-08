@@ -5,20 +5,24 @@ const awsCredentials = new AWS.Credentials(
   process.env.SECRET_ACCESS_KEY
 )
 AWS.config.credentials = awsCredentials
+AWS.config.region = 'ap-northeast-2'
 
 const S3 = new AWS.S3()
 
-type FileType =
-  // | { [fieldname: string]: Express.Multer.File }
-  Express.Multer.File
+export interface ImageFile {
+  originalname: string
+  mimetype: string
+  buffer: Buffer
+}
+type FileType = Express.Multer.File | ImageFile
 
-export const s3upload = (filename: string, file: FileType) => {
-  console.log(`uploaded file: ${JSON.stringify(file, null, 4)}`)
+export const s3upload = (file: FileType) => {
   return new Promise((resolve, reject) => {
     try {
       const uploadParams = {
         Bucket: process.env.S3_BUCKET_NAME,
-        Key: filename,
+        Key: file.originalname,
+        ContentType: file.mimetype,
         Body: file.buffer,
       }
 
@@ -30,7 +34,7 @@ export const s3upload = (filename: string, file: FileType) => {
         if (data === undefined) {
           reject(new Error('Failed to upload file'))
         } else {
-          resolve(data)
+          resolve(data.Location)
         }
       })
     } catch (error) {

@@ -1,4 +1,4 @@
-import { BaseEntity } from 'core/infra/BaseEntity'
+import { BaseEntity } from 'core/infra/base-entity'
 import { UniqueEntityId } from 'core/infra/unique-entity-id'
 
 interface PostProps {
