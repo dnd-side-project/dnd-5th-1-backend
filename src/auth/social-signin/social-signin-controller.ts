@@ -1,6 +1,6 @@
 import { BaseController } from 'core/infra/base-controller'
 import { SocialSignin } from './social-signin'
-import { UseCaseError } from '../../core/infra/user-case-error'
+import { UseCaseError } from '../../core/infra/use-case-error'
 import {
   SocialSigninInputDto,
   SocialSigninOutputDto,

@@ -27,6 +27,8 @@ export class PostImageMapper {
         thumbnailUrl: postImageModel.thumbnailUrl,
         isFirstPick: postImageModel.isFirstPick,
         extension: extension,
+        width: postImageModel.width,
+        height: postImageModel.height,
       },
       new UniqueEntityId(postImageModel.id)
     )

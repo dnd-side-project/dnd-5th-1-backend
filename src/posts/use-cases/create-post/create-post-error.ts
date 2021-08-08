@@ -1,4 +1,4 @@
-import { UseCaseError } from 'core/infra/user-case-error'
+import { UseCaseError } from 'core/infra/use-case-error'
 
 export class InvalidTitle extends UseCaseError {
   constructor() {

@@ -29,7 +29,7 @@ export class PostImageModel {
   post: PostModel
 
   @JoinColumn()
-  @OneToOne(() => VoteModel, (vote) => vote.image)
+  @OneToOne(() => VoteModel, (vote) => vote.postImage)
   vote: VoteModel
 
   @Column('varchar', {

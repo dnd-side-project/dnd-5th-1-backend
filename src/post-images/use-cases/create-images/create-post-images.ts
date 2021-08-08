@@ -36,7 +36,7 @@ export class CreatePostImages {
           originalname: imageFile.originalname,
           mimetype: imageFile.mimetype,
           buffer: await sharp(imageFile.buffer)
-            .resize({ width: 200, height: 200, fit: 'inside' })
+            .resize({ width: 270, height: 270, fit: 'inside' })
             .toBuffer(),
         }
         thumbnailUrl = (await s3upload(thumbnailImage)) as string

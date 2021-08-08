@@ -3,10 +3,9 @@ import cors, { CorsOptions } from 'cors'
 import authRouter from './auth'
 import { getConnection } from './infra/database'
 import postRouter from 'posts'
-import voteRouter from '../votes'
+import voteRouter from './votes'
 import imagesRouter from 'post-images'
 import { jwtCheck } from './middlewares/jwt-check'
-
 
 const PORT = parseInt(process.env.PORT!, 10)
 const corsOption: CorsOptions = {

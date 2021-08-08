@@ -1,5 +1,5 @@
 import { BaseController } from 'core/infra/base-controller'
-import { UseCaseError } from '../../core/infra/user-case-error'
+import { UseCaseError } from '../../core/infra/use-case-error'
 import { UserExists } from './social-signup-error'
 import {
   SocialSignupInputDto,

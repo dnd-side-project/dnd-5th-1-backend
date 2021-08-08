@@ -42,7 +42,7 @@ export class CreateVote {
     })
 
     try {
-      await this.voteRepository.saveEntity(vote)
+      await this.voteRepository.save(vote)
     } catch (error) {
       return new Error(
         `vote save failed, userId: ${userId.toString()}, postId: ${postId.toString()}`

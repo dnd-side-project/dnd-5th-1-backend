@@ -1,12 +1,12 @@
 import { Vote } from '../domain/vote'
-import { Category } from '../domain/category'
-import { UniqueEntityId } from '../../src/core/infra/unique-entity-id'
+import { Category, CategoryType } from '../domain/category'
+import { UniqueEntityId } from '../../core/infra/unique-entity-id'
 import { VoteModel } from 'infra/models/vote-model'
 
 export class VoteMapper {
   public static toPersistence(vote: Vote): any {
     return {
-      postImageId: vote.userId.toString(),
+      userId: vote.userId.toString(),
       postId: vote.postId.toString(),
       postImageId: vote.postImageId.toString(),
       category: vote.category.value,
@@ -17,7 +17,7 @@ export class VoteMapper {
     const userId = new UniqueEntityId(voteModel.userId)
     const postId = new UniqueEntityId(voteModel.postId)
     const postImageId = new UniqueEntityId(voteModel.postImageId)
-    const category = new Category(voteModel.category)
+    const category = new Category(voteModel.category as CategoryType)
 
     const vote = new Vote(
       {
