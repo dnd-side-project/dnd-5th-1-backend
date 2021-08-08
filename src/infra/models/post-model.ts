@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   OneToMany,
+  JoinColumn,
 } from 'typeorm'
 import { PostImageModel } from './post-image-model'
 import { UserModel } from './user-model'
@@ -16,7 +17,16 @@ export class PostModel {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
+  @Column('varchar', {
+    name: 'user_id',
+    comment: 'user id',
+    length: 200,
+    default: null
+  })
+  userId: string
+
   @ManyToOne(() => UserModel, (user) => user.posts)
+  @JoinColumn({ name: 'user_id' })
   user: UserModel
 
   @OneToMany(() => PostImageModel, (image) => image.post)
@@ -42,14 +52,6 @@ export class PostModel {
     default: null,
   })
   title: string
-
-  @Column('varchar', {
-    name: 'description',
-    comment: 'post description',
-    length: 1000,
-    default: null,
-  })
-  description: string
 
   @Column('varchar', {
     name: 'thumbnail url',

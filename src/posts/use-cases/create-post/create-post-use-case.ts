@@ -7,6 +7,7 @@ import {
 import { inject, injectable } from 'tsyringe'
 import { LengthCheck } from 'posts/domain/length-check'
 import { Post } from 'posts/domain/post'
+import { UniqueEntityId } from 'core/infra/unique-entity-id'
 
 type Response =
   | CreatePostOutputDto
@@ -21,17 +22,18 @@ export class CreatePost {
 
   public async execute(inputDto: CreatePostInputDto): Promise<Response> {
     try {
-      const { title, description, expiredAt } = inputDto
+      const title = inputDto.title
+      const expiredAt = inputDto.expiredAt
+      const userId = new UniqueEntityId(inputDto.userId)
       if (!LengthCheck.isValidLength(title, [1, 50])) {
         return new CreatePostErrors.InvalidTitle()
       }
-      if (!LengthCheck.isValidLength(description, [1, 200])) {
-        return new CreatePostErrors.InvalidDescription()
-      }
 
       const createdPost = this.postRepository.create(
-        new Post({ title, description, expiredAt })
+        new Post({ title, expiredAt, userId })
       )
+
+      console.log(createdPost)
 
       await this.postRepository.save(createdPost)
 

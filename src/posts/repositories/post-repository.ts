@@ -5,7 +5,6 @@ import { IPostRepository } from './post-repository.interface'
 import { PostModel } from 'infra/models/post-model'
 import { Post } from 'posts/domain/post'
 import { PostMapper } from 'posts/mappers/post-mapper'
-
 import { VoteModel } from 'infra/models/vote-model'
 import { PostImageModel } from 'infra/models/post-image-model'
 
@@ -48,6 +47,7 @@ export class PostRepository implements IPostRepository {
   }
 
   public async save(postModel: PostModel): Promise<PostModel | null> {
+    console.log(postModel)
     const post = await this.ormRepository.save(postModel)
     console.log(`Post create and save result: ${JSON.stringify(post, null, 4)}`)
     return post

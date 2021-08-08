@@ -41,6 +41,10 @@ export class CreateVote {
       category: category,
     })
 
+    console.log(postId)
+    console.log(postImageId)
+    console.log(userId)
+
     try {
       await this.voteRepository.save(vote)
     } catch (error) {

@@ -12,7 +12,11 @@ export class CreatePostController extends BaseController {
   }
 
   async executeImpl(): Promise<any> {
-    const inputDto: CreatePostInputDto = this.req.body as CreatePostInputDto
+    const inputDto: CreatePostInputDto = {
+      title: this.req.body.title,
+      expiredAt: this.req.body.expiredAt,
+      userId: this.req.user
+    } as CreatePostInputDto
 
     try {
       const result = await this.useCase.execute(inputDto)

@@ -72,15 +72,15 @@ export class PostImageModel {
 
   @Column('int', {
     name: 'width',
-    nullable: false,
     comment: 'file width',
+    default: null
   })
   width: number
 
   @Column('int', {
     name: 'height',
-    nullable: false,
     comment: 'file height',
+    default: null
   })
   height: number
 
