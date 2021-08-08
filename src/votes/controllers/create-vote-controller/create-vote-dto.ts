@@ -1,7 +1,7 @@
 export class CreateVoteInputDto {
   userId: string
   postId: string
-  postImageID: string
+  postImageId: string
   category: string
 }
 
