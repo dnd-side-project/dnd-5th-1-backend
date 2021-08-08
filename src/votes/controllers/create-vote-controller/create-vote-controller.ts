@@ -1,6 +1,6 @@
 import { BaseController } from 'core/infra/base-controller'
 import { autoInjectable } from 'tsyringe'
-import { UseCaseError } from 'core/infra/user-case-error'
+import { UseCaseError } from 'core/infra/use-case-error'
 import { CreateVoteInputDto } from './create-vote-dto'
 import { CreateVote } from '../../use-cases/create-vote/create-vote'
 import {

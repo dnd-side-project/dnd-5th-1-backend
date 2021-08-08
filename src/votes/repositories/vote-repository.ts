@@ -27,8 +27,7 @@ export class VoteRepository implements IVoteRepository {
     postId: UniqueEntityId
   ): Promise<Vote> {
     const vote = await this.ormRepository.findOne({
-      userId: userId.toString(),
-      postId: postId.toString(),
+      where: { userId: userId.toString(), postId: postId.toString() },
     })
 
     return vote ? VoteMapper.toDomain(vote) : null
@@ -40,11 +39,11 @@ export class VoteRepository implements IVoteRepository {
     return result ? true : false
   }
 
-  public async saveEntity(vote: Vote): Promise<void> {
+  public async save(vote: Vote): Promise<void> {
     await this.ormRepository.save(VoteMapper.toPersistence(vote))
   }
 
-  public async deleteEntity(vote: Vote): Promise<void> {
+  public async delete(vote: Vote): Promise<void> {
     await this.ormRepository.remove(VoteMapper.toPersistence(vote))
   }
 }

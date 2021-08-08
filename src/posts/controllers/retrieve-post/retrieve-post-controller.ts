@@ -1,5 +1,5 @@
 import { BaseController } from 'core/infra/base-controller'
-import { UseCaseError } from '../../../core/infra/user-case-error'
+import { UseCaseError } from '../../../core/infra/use-case-error'
 import { autoInjectable } from 'tsyringe'
 import { RetrievePost } from '../../use-cases/retrieve-post/retrieve-post-use-case'
 import {

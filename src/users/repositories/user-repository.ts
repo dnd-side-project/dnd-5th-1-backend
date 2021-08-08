@@ -55,7 +55,7 @@ export class UserRepository implements IUserRepository {
     return userExists ? true : false
   }
 
-  public async saveEntity(user: User): Promise<void> {
+  public async save(user: User): Promise<void> {
     const exists = await this.exists(user)
     try {
       if (!exists) {
@@ -68,7 +68,7 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  public async deleteEntity(user: User): Promise<void> {
+  public async delete(user: User): Promise<void> {
     const exists = await this.findByVendorAndVendorAccountId(
       user.vendor,
       user.vendorAccountId
@@ -81,12 +81,4 @@ export class UserRepository implements IUserRepository {
       console.log(error)
     }
   }
-  // public async save(t: User): Promise<any> {
-  //   userModel = UserMapper.toPersistence(User)
-  //   this.save(userModel)
-  // }
-
-  // public async delete(t: User): Promise<any> {
-  //   throw new Error('Method not implemented.')
-  // }
 }

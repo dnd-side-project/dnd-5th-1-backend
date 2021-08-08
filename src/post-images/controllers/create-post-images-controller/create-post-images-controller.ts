@@ -2,7 +2,7 @@ import { BaseController } from 'core/infra/base-controller'
 import { autoInjectable } from 'tsyringe'
 import { CreatePostImagesInputDto } from './create-post-images-dto'
 import { CreatePostImages } from 'post-images/use-cases/create-images/create-post-images'
-import { UseCaseError } from 'core/infra/user-case-error'
+import { UseCaseError } from 'core/infra/use-case-error'
 import {
   InvalidExtension,
   PostImageExists,

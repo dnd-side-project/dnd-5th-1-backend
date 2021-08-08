@@ -1,5 +1,5 @@
 import { BaseController } from 'core/infra/base-controller'
-import { UseCaseError } from '../../../core/infra/user-case-error'
+import { UseCaseError } from '../../../core/infra/use-case-error'
 import { autoInjectable } from 'tsyringe'
 import { ListPosts } from '../../use-cases/list-posts/list-post-use-case'
 import { ListPostsInputDto, ListPostsOutputDto } from './list-post-dto'
@@ -27,7 +27,7 @@ export class ListPostsController extends BaseController {
       } else {
         const outputDto: ListPostsOutputDto = result
         return this.ok(this.res, 200, {
-          posts: result
+          posts: result,
         })
       }
     } catch (error: unknown) {
