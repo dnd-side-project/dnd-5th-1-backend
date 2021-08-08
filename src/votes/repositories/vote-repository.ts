@@ -18,7 +18,6 @@ export class VoteRepository implements IVoteRepository {
     const vote = await this.ormRepository.findOne({
       id: voteId.toString(),
     })
-
     return vote ? VoteMapper.toDomain(vote) : null
   }
 
@@ -34,12 +33,13 @@ export class VoteRepository implements IVoteRepository {
   }
 
   public async exists(vote: Vote): Promise<boolean> {
-    const result = await this.findVoteById(vote.id)
+  const result = await this.findVoteById(vote.id)
 
     return result ? true : false
   }
 
   public async save(vote: Vote): Promise<void> {
+    // console.log(VoteMapper.toPersistence(vote))
     await this.ormRepository.save(VoteMapper.toPersistence(vote))
   }
 

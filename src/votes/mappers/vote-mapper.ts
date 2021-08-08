@@ -5,6 +5,7 @@ import { VoteModel } from 'infra/models/vote-model'
 
 export class VoteMapper {
   public static toPersistence(vote: Vote): any {
+    console.log(vote)
     return {
       userId: vote.userId.toString(),
       postId: vote.postId.toString(),

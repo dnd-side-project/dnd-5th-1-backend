@@ -5,8 +5,8 @@ import { IPostRepository } from './post-repository.interface'
 import { PostModel } from 'infra/models/post-model'
 import { Post } from 'posts/domain/post'
 import { PostMapper } from 'posts/mappers/post-mapper'
-import { ImageModel } from 'infra/models/image-model'
 import { VoteModel } from 'infra/models/vote-model'
+import { PostImageModel } from 'infra/models/post-image-model'
 
 @singleton()
 @EntityRepository(PostModel)
@@ -47,6 +47,7 @@ export class PostRepository implements IPostRepository {
   }
 
   public async save(postModel: PostModel): Promise<PostModel | null> {
+    console.log(postModel)
     const post = await this.ormRepository.save(postModel)
     console.log(`Post create and save result: ${JSON.stringify(post, null, 4)}`)
     return post
@@ -59,21 +60,21 @@ export class PostRepository implements IPostRepository {
     return result ? PostMapper.toDomain(result) : null
   }
 
-  public async savePostImages(postId: string, images: ImageModel[]) {
-    const post = await this.ormRepository.findOne(postId)
-    images.forEach((image) => {
-      image.post = post
-    })
-  }
+  // public async savePostImages(postId: string, images: PostImageModel[]) {
+  //   const post = await this.ormRepository.findOne(postId)
+  //   images.forEach((image) => {
+  //     image.post = post
+  //   })
+  // }
 
-  public async saveThumbnailUrl(postId: string, images: ImageModel[]) {
-    const post = await this.ormRepository.findOne(postId)
-    images.forEach((image) => {
-      if (image.isPicked === true) {
-        post.thumbnailUrl = image.thumbnailUrl
-      }
-    })
-  }
+  // public async saveThumbnailUrl(postId: string, images: PostImageModel[]) {
+  //   const post = await this.ormRepository.findOne(postId)
+  //   images.forEach((image) => {
+  //     if (image.isPicked === true) {
+  //       post.thumbnailUrl = image.thumbnailUrl
+  //     }
+  //   })
+  // }
 
   public async retrieve(postId: string): Promise<Post> {
     const post = await this.ormRepository.findOne(postId)

@@ -8,7 +8,7 @@ const postImagesRouter = express.Router()
 container.register('IPostImageRepository', { useClass: PostImageRepository })
 
 postImagesRouter.post('/', imagesUpload, (request, response) => {
-  console.log(`request body at router: ${request.body}`)
+  // console.log(`request body at router: ${request.body}`)
   container.resolve(CreateImagesController).execute(request, response)
 })
 

@@ -6,7 +6,7 @@ import { VoteRepository } from './repositories/vote-repository'
 const voteRouter = express.Router()
 container.register('IVoteRepository', { useClass: VoteRepository })
 
-voteRouter.post('/', (request, response) => {
+voteRouter.post('/:post_id/:image_id', (request, response) => {
   console.log(`request body at router: ${request.body}`)
   container.resolve(CreateVoteController).execute(request, response)
 })

@@ -3,8 +3,8 @@ import { UniqueEntityId } from 'core/infra/unique-entity-id'
 
 interface PostProps {
   title: string
-  description?: string
   expiredAt: Date
+  userId: UniqueEntityId
 }
 
 export class Post extends BaseEntity<PostProps> {
@@ -12,12 +12,12 @@ export class Post extends BaseEntity<PostProps> {
     return this._id
   }
 
-  get title(): string {
-    return this.props.title
+  get userId(): UniqueEntityId {
+    return this.props.userId
   }
 
-  get description(): string {
-    return this.props.description
+  get title(): string {
+    return this.props.title
   }
 
   get expiredAt(): Date {

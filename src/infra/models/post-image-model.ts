@@ -11,7 +11,7 @@ import {
 import { PostModel } from './post-model'
 import { VoteModel } from './vote-model'
 
-@Entity('PostImage', { schema: 'app-db' })
+@Entity('post_images', { schema: 'app-db' })
 export class PostImageModel {
   @PrimaryGeneratedColumn('uuid')
   id: string
@@ -28,7 +28,6 @@ export class PostImageModel {
   @JoinColumn({ name: 'post_id' })
   post: PostModel
 
-  @JoinColumn()
   @OneToOne(() => VoteModel, (vote) => vote.postImage)
   vote: VoteModel
 
@@ -73,15 +72,15 @@ export class PostImageModel {
 
   @Column('int', {
     name: 'width',
-    nullable: false,
     comment: 'file width',
+    default: null
   })
   width: number
 
   @Column('int', {
     name: 'height',
-    nullable: false,
     comment: 'file height',
+    default: null
   })
   height: number
 

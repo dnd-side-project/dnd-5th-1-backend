@@ -41,7 +41,7 @@ export default class Server {
     this.app.use('/v1/auth', authRouter)
     this.app.use('/v1/votes', jwtCheck, voteRouter)
     this.app.use('/v1/post-images', jwtCheck, imagesRouter)
-    this.app.use('/v1/post', postRouter)
+    this.app.use('/v1/posts', postRouter)
   }
 
   public start(): void {

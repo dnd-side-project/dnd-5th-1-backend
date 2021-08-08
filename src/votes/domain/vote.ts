@@ -15,7 +15,7 @@ export class Vote extends BaseEntity<VoteProps> {
   }
 
   get userId(): UniqueEntityId {
-    return this.props.postId
+    return this.props.userId
   }
 
   get postId(): UniqueEntityId {
@@ -23,7 +23,7 @@ export class Vote extends BaseEntity<VoteProps> {
   }
 
   get postImageId(): UniqueEntityId {
-    return this.props.postId
+    return this.props.postImageId
   }
 
   get category(): Category {

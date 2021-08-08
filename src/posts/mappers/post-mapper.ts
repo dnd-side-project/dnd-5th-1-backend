@@ -6,8 +6,8 @@ export class PostMapper {
   public static toPersistence(post: Post): any {
     return {
       title: post.title,
-      description: post.description,
-      expiredAt: post.expiredAt
+      expiredAt: post.expiredAt,
+      userId: post.userId.toString()
     }
   }
 
@@ -15,8 +15,8 @@ export class PostMapper {
     const post = new Post(
       {
         title: postModel.title,
-        description: postModel.description,
         expiredAt: postModel.expiredAt,
+        userId: new UniqueEntityId(postModel.userId)
       },
       new UniqueEntityId(postModel.id)
     )
