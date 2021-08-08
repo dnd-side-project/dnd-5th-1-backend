@@ -11,7 +11,7 @@ import {
 import { PostModel } from './post-model'
 import { VoteModel } from './vote-model'
 
-@Entity('PostImage', { schema: 'app-db' })
+@Entity('post_images', { schema: 'app-db' })
 export class PostImageModel {
   @PrimaryGeneratedColumn('uuid')
   id: string
