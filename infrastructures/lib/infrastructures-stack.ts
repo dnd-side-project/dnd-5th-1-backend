@@ -10,12 +10,14 @@ import * as targets from '@aws-cdk/aws-events-targets'
 import * as codedeploy from '@aws-cdk/aws-codedeploy'
 import * as codepipeline from '@aws-cdk/aws-codepipeline'
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions'
+import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets'
+import * as ecrdeploy from 'cdk-ecr-deployment'
 
 export class InfrastructuresStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props)
 
-    const imageTag = this.node.tryGetContext('imageTag')
+    // const imageTag = this.node.tryGetContext('imageTag')
 
     /**
      * Create a new VPC with single NAT Gateway
@@ -23,7 +25,7 @@ export class InfrastructuresStack extends cdk.Stack {
     const vpc = new ec2.Vpc(this, 'picme-ecs-cdk-vpc', {
       cidr: '10.0.0.0/16',
       natGateways: 1,
-      maxAzs: 3,
+      maxAzs: 2,
     })
 
     const clusterAdmin = new iam.Role(this, 'PickmeAdminRole', {
@@ -48,7 +50,20 @@ export class InfrastructuresStack extends cdk.Stack {
     )
 
     // ECR - repo
-    const ecrRepo = new ecr.Repository(this, 'PickmeEcrRepo')
+    const ecrRepo = ecr.Repository.fromRepositoryName(
+      this,
+      'pickme-backend-ecr-repo',
+      'pickme-backend-ecr-repo'
+    )
+
+    // const image = new DockerImageAsset(this, 'MyBuildImage', {
+    //   directory: '../',
+    // })
+    // //upload docker image to ecr
+    // new ecrdeploy.ECRDeployment(this, 'DeployDockerImage', {
+    //   src: new ecrdeploy.DockerImageName(image.imageUri),
+    //   dest: new ecrdeploy.DockerImageName(`${ecrRepo.repositoryUri}`),
+    // })
 
     // ***ECS Contructs***
 
@@ -72,7 +87,9 @@ export class InfrastructuresStack extends cdk.Stack {
     taskDef.addToExecutionRolePolicy(executionRolePolicy)
 
     const container = taskDef.addContainer('pickme-app', {
-      image: ecs.ContainerImage.fromEcrRepository(ecrRepo, imageTag),
+      // image: ecs.ContainerImage.fromEcrRepository(ecrRepo, imageTag),
+      // tag: latest
+      image: ecs.ContainerImage.fromEcrRepository(ecrRepo),
       logging,
     })
 
@@ -201,7 +218,7 @@ export class InfrastructuresStack extends cdk.Stack {
 
     // PIPELINE STAGES
 
-    new codepipeline.Pipeline(this, 'MyECSPipeline', {
+    new codepipeline.Pipeline(this, 'PickmeECSPipeline', {
       stages: [
         {
           stageName: 'Source',
