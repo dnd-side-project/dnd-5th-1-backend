@@ -37,6 +37,9 @@ export class PostModel {
   })
   votes: VoteModel[]
 
+  // for counting relation object number and mapping here
+  participantsNum: number
+
   @Column('varchar', {
     name: 'expiredAt',
     comment: 'expiredAt',

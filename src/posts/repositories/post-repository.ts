@@ -7,6 +7,7 @@ import { Post } from 'posts/domain/post'
 import { PostMapper } from 'posts/mappers/post-mapper'
 import { VoteModel } from 'infra/models/vote-model'
 import { PostImageModel } from 'infra/models/post-image-model'
+import { UserModel } from 'infra/models/user-model'
 
 @singleton()
 @EntityRepository(PostModel)
@@ -18,15 +19,21 @@ export class PostRepository implements IPostRepository {
   }
 
   public async listPosts(page: number, limit: number) {
+    try {
     const list = await this.ormRepository
-      .createQueryBuilder('p')
-      // .innerJoin(VoteModel, "v", "v.postId = p.id")
-      // .addSelect('COUNT(v.id) as participantsNum')
-      .skip(page)
-      .take(limit)
-      .getMany()
-    console.log(list)
+    .createQueryBuilder('p')
+    .innerJoin('p.user', 'u')
+    .leftJoin('p.votes', 'v')
+    // .leftJoinAndSelect('p.images', 'pi')
+    .select(['p.id AS postId','p.title AS title', 'p.expiredAt AS expiredAt', 'u.nickname AS username', 'u.imageUrl AS userProfileImage', 'COUNT(v.id) AS participantsNum'])
+    // .loadRelationCountAndMap('p.participantsNum', 'p.votes')
+    // .addSelect('COUNT(v.id)')
+    .groupBy('p.id')
+    .getRawMany()
     return list
+    } catch(error) {
+      console.log('###########: ' + error.code)
+    }
   }
 
   public async findPostById(postId: UniqueEntityId): Promise<Post> {

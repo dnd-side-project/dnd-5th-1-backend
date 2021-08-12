@@ -15,7 +15,7 @@ import { VoteModel } from './vote-model'
 @Entity('users', { schema: 'app-db' })
 export class UserModel {
   @PrimaryGeneratedColumn('uuid')
-  id!: string
+  id: string
 
   @OneToMany(() => PostModel, (post)=> post.user, {
     cascade: true
@@ -49,7 +49,7 @@ export class UserModel {
     comment: 'user profile image',
     length: 200,
   })
-  imageUrl!: string
+  imageUrl: string
 
   @Column('varchar', {
     name: 'vendor',
