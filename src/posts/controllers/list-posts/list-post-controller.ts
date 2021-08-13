@@ -30,7 +30,8 @@ export class ListPostsController extends BaseController {
           posts: result,
         })
       }
-    } catch (error: unknown) {
+    } catch (error: any) {
+      console.log('#######: ' + error)
       if (error instanceof Error) {
         return this.fail(error)
       }

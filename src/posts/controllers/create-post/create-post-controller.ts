@@ -31,6 +31,7 @@ export class CreatePostController extends BaseController {
         return this.ok(this.res, 200, outputDto)
       }
     } catch (error: unknown) {
+      console.log(error)
       if (error instanceof Error) {
         return this.fail(error)
       }

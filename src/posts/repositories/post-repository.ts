@@ -7,6 +7,8 @@ import { Post } from 'posts/domain/post'
 import { PostMapper } from 'posts/mappers/post-mapper'
 import { VoteModel } from 'infra/models/vote-model'
 import { PostImageModel } from 'infra/models/post-image-model'
+import { UserModel } from 'infra/models/user-model'
+import { IRetrievePost } from 'posts/controllers/retrieve-post/retrieve-post-dto'
 
 @singleton()
 @EntityRepository(PostModel)
@@ -18,15 +20,22 @@ export class PostRepository implements IPostRepository {
   }
 
   public async listPosts(page: number, limit: number) {
+    try {
     const list = await this.ormRepository
-      .createQueryBuilder('p')
-      // .innerJoin(VoteModel, "v", "v.postId = p.id")
-      // .addSelect('COUNT(v.id) as participantsNum')
-      .skip(page)
-      .take(limit)
-      .getMany()
-    console.log(list)
+    .createQueryBuilder('p')
+    .innerJoin('p.user', 'u')
+    .leftJoin('p.votes', 'v')
+    .leftJoin('p.images', 'pi')
+    .addSelect('pi.thumbnailUrl')
+    .loadRelationCountAndMap('p.participantsNum', 'p.votes')
+    .getMany()
+    list.forEach(post => {
+      post.images = [post.images[0], post.images[1]]
+    })
     return list
+    } catch(error) {
+      console.log('###########: ' + error.code)
+    }
   }
 
   public async findPostById(postId: UniqueEntityId): Promise<Post> {
@@ -76,9 +85,14 @@ export class PostRepository implements IPostRepository {
   //   })
   // }
 
-  public async retrieve(postId: string): Promise<Post> {
-    const post = await this.ormRepository.findOne(postId)
-    return post ? PostMapper.toDomain(post) : null
+  public async retrieve(postId: string): Promise<any> {
+    const detail = this.ormRepository
+    .createQueryBuilder('p')
+    .leftJoinAndSelect('p.images', 'pi')
+    .where('p.id = :postId', { postId })
+    .getOne()
+
+    return detail
   }
 
   public async exists(postId: string): Promise<boolean> {

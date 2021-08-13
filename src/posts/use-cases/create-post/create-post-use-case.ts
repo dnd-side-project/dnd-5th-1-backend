@@ -42,7 +42,7 @@ export class CreatePost {
       }
       return outputDto
     } catch (error) {
-      throw new Error()
+      throw new Error(error.message)
     }
   }
 }
