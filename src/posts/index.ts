@@ -1,7 +1,9 @@
 import express from 'express'
+import { PostModel } from 'infra/models/post-model'
 import { jwtCheck } from 'middlewares/jwt-check'
 import 'reflect-metadata'
 import { container } from 'tsyringe'
+import { getRepository } from 'typeorm'
 import { CreatePostController } from './controllers/create-post/create-post-controller'
 import { DeletePostController } from './controllers/delete-post/delete-post-controller'
 import { ListPostsController } from './controllers/list-posts/list-post-controller'
@@ -14,6 +16,19 @@ container.register('IPostRepository', { useClass: PostRepository })
 postRouter.post('/', jwtCheck, (request, response) => {
   console.log(`request body at router: ${request.body}`)
   container.resolve(CreatePostController).execute(request, response)
+})
+
+postRouter.get('/sdfsdfsdfsdfsdf', async (req, res) => {
+  console.log('hereee')
+  const postRepository = getRepository(PostModel)
+  // const { postId } = req.body as {
+    //   postId: string
+    // }
+
+  const posts = await postRepository.find({
+    relations: ["images"]
+})
+  res.status(200).json(posts)
 })
 
 postRouter.get('/', (request, response) => {
@@ -31,4 +46,5 @@ postRouter.delete('/:post_id', jwtCheck, (request, response) => {
   container.resolve(DeletePostController).execute(request, response)
 })
 
+  
 export default postRouter
