@@ -5,6 +5,7 @@ import {
   RetirevePostOutputDto,
 } from '../../controllers/retrieve-post/retrieve-post-dto'
 import { inject, injectable } from 'tsyringe'
+import express from 'express'
 
 type Response = RetirevePostOutputDto | RetrievePostErrors.NotFound
 
@@ -14,16 +15,16 @@ export class RetrievePost {
     @inject('IPostRepository') private postRepository: IPostRepository
   ) {}
 
-  public async execute(inputDto: RetirevePostInputDto): Promise<Response> {
+  public async execute(req: express.Request, inputDto: RetirevePostInputDto): Promise<Response> {
     try {
       const { postId } = inputDto
 
-      const list = await this.postRepository.retrieve(postId)
+      const list = await this.postRepository.retrieve(req, postId)
 
       const outputDto: RetirevePostOutputDto = list
       return outputDto
     } catch (error) {
-      throw new Error()
+      throw error
     }
   }
 }

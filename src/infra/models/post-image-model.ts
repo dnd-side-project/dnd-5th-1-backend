@@ -31,6 +31,24 @@ export class PostImageModel {
   @OneToOne(() => VoteModel, (vote) => vote.postImage)
   vote: VoteModel
 
+  // varaibale for voted count
+  pickedNum: number
+
+  // variable for category count
+  emotion: number
+
+  // variable for category count
+  color: number
+
+  // variable for category count
+  composition: number
+
+  // variable for category count
+  light: number
+
+  // variable for category count
+  skip: number
+
   @Column('varchar', {
     name: 'original_name',
     nullable: false,

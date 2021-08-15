@@ -27,6 +27,17 @@ export interface IRetrievePost {
   participantsNum: number
 }
 
+export interface RetrievePostQueryObject {
+  imageUrl: string
+  isFirstPick: number
+  pickedNum: number
+  emotion: number
+  color: number
+  composition: number
+  light: number
+  skip: number
+}
+
 export interface RetirevePostOutputDto {
   post: IRetrievePost
 }
