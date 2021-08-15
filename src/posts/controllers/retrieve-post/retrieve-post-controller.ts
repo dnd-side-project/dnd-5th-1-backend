@@ -19,9 +19,9 @@ export class RetrievePostController extends BaseController {
     const dto: RetirevePostInputDto = {
       postId,
     }
-
+    
     try {
-      const result = await this.useCase.execute(dto)
+      const result = await this.useCase.execute(this.req, dto)
 
       if (result instanceof UseCaseError) {
         switch (result.constructor) {
