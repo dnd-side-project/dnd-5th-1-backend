@@ -56,13 +56,13 @@ export class PostModel {
   })
   title: string
 
-  @Column('varchar', {
-    name: 'thumbnail url',
-    comment: 'thumbnail url string',
-    length: 200,
-    default: null,
-  })
-  thumbnailUrl: string
+  // @Column('varchar', {
+  //   name: 'thumbnail url',
+  //   comment: 'thumbnail url string',
+  //   length: 200,
+  //   default: null,
+  // })
+  // thumbnailUrl: string
 
   @CreateDateColumn({
     type: 'timestamp',

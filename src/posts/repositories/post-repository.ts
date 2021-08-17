@@ -28,6 +28,8 @@ export class PostRepository implements IPostRepository {
     .leftJoin('p.votes', 'v')
     .leftJoin('p.images', 'pi')
     .addSelect('pi.thumbnailUrl')
+    .addSelect('u.nickname')
+    .addSelect('u.imageUrl')
     .loadRelationCountAndMap('p.participantsNum', 'p.votes')
     .getMany()
     list.forEach(post => {
@@ -93,7 +95,7 @@ export class PostRepository implements IPostRepository {
     let firstPickIndex = 0
     let isVoted = false
     let participantsNum = 0
-    let votedImageId = null
+    let votedImageIndex = null
     let title = ''
     let expiredAt = ''
     // second, according to the way above,
@@ -114,13 +116,14 @@ export class PostRepository implements IPostRepository {
             title = image.title
             expiredAt = image.expiredAt
           }
+          imageInfoObject.id = image.id
           if (image.isFirstPick === 1) { 
             firstPickIndex = i
             console.log(firstPickIndex)
             imageInfoObject.isFirstPick = 1 
           }
           if (votesResult[1] > 0) isVoted = true
-          if (image.userId = req.user) votedImageId = image.id
+          if (image.userId = req.user) votedImageIndex = i
           participantsNum += votesResult[1]
           imageInfoObject.pickedNum = votesResult[1]
           imageInfoObject.imageUrl = image.imageUrl
@@ -137,7 +140,7 @@ export class PostRepository implements IPostRepository {
       firstPickIndex,
       isVoted,
       participantsNum,
-      votedImageId,
+      votedImageIndex,
       expiredAt,
       title,
       images
