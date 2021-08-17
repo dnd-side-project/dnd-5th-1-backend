@@ -37,6 +37,9 @@ export class PostModel {
   })
   votes: VoteModel[]
 
+  // for counting relation object number and mapping here
+  participantsNum: number
+
   @Column('varchar', {
     name: 'expiredAt',
     comment: 'expiredAt',
@@ -53,13 +56,13 @@ export class PostModel {
   })
   title: string
 
-  @Column('varchar', {
-    name: 'thumbnail url',
-    comment: 'thumbnail url string',
-    length: 200,
-    default: null,
-  })
-  thumbnailUrl: string
+  // @Column('varchar', {
+  //   name: 'thumbnail url',
+  //   comment: 'thumbnail url string',
+  //   length: 200,
+  //   default: null,
+  // })
+  // thumbnailUrl: string
 
   @CreateDateColumn({
     type: 'timestamp',

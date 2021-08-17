@@ -10,7 +10,7 @@ container.register('IPostImageRepository', { useClass: PostImageRepository })
 postImagesRouter.post('/:post_id', imagesUpload, (request, response) => {
   console.log(`request body at router: ${request.body.metadata}`)
   console.log(
-    `request body: ${JSON.parse(request.body.metadata).metadata[0].isFirstPick}`
+    // `request body: ${JSON.parse(request.body.metadata).metadata[0].isFirstPick}`
   )
   container.resolve(CreateImagesController).execute(request, response)
 })

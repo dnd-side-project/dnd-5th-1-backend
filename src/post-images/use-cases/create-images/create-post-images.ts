@@ -67,6 +67,7 @@ export class CreatePostImages {
       }
 
       try {
+        console.log('here')
         await this.postImageRepository.save(postImage)
       } catch (error) {
         return new Error(
