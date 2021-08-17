@@ -24,6 +24,8 @@ export class SocialSigninController extends BaseController {
         switch (result.constructor) {
           case SocialSigninErrors.UserNotFound:
             return this.notFound(result.message)
+          case SocialSigninErrors.InvalidVendor:
+            return this.notFound(result.message)
         }
       } else {
         const outputDto: SocialSigninOutputDto = result
@@ -36,6 +38,7 @@ export class SocialSigninController extends BaseController {
         return this.ok(this.res, 200, {
           profilePictureImage: outputDto.user.imageUrl.value,
           nickname: outputDto.user.nickname.value,
+          vendor: outputDto.user.vendor.value,
         })
       }
     } catch (error: unknown) {
