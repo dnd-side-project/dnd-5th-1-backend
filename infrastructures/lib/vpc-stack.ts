@@ -38,6 +38,10 @@ export class VpcStack extends cdk.Stack {
       },
     })
 
+    this.vpc.addInterfaceEndpoint('vpc-endpoint-ecr-docker', {
+      service: ec2.InterfaceVpcEndpointAwsService.ECR_DOCKER,
+    })
+
     this.vpc.addInterfaceEndpoint('vpc-endpoint-ecr', {
       service: ec2.InterfaceVpcEndpointAwsService.ECR,
     })
@@ -51,7 +55,7 @@ export class VpcStack extends cdk.Stack {
     })
 
     this.vpc.addInterfaceEndpoint('vpc-endpoint-cloudwatch', {
-      service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH,
+      service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
     })
   }
 }
