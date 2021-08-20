@@ -3,7 +3,7 @@ import { PostModel } from 'infra/models/post-model'
 import { jwtCheck } from 'middlewares/jwt-check'
 import 'reflect-metadata'
 import { container } from 'tsyringe'
-import { getRepository } from 'typeorm'
+import { getCustomRepository, getRepository } from 'typeorm'
 import { CreatePostController } from './controllers/create-post/create-post-controller'
 import { DeletePostController } from './controllers/delete-post/delete-post-controller'
 import { ListPostsController } from './controllers/list-posts/list-post-controller'
@@ -20,14 +20,12 @@ postRouter.post('/', jwtCheck, (request, response) => {
 
 postRouter.get('/sdfsdfsdfsdfsdf', async (req, res) => {
   console.log('hereee')
-  const postRepository = getRepository(PostModel)
+  const postRepository = getCustomRepository(PostRepository)
   // const { postId } = req.body as {
     //   postId: string
     // }
 
-  const posts = await postRepository.find({
-    relations: ["images"]
-})
+  const posts = await postRepository.test()
   res.status(200).json(posts)
 })
 

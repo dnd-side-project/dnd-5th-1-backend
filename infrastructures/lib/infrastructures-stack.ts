@@ -2,38 +2,37 @@ import * as cdk from '@aws-cdk/core'
 import * as ec2 from '@aws-cdk/aws-ec2'
 import * as ecr from '@aws-cdk/aws-ecr'
 import * as ecs from '@aws-cdk/aws-ecs'
+import * as rds from '@aws-cdk/aws-rds'
 import * as ecs_patterns from '@aws-cdk/aws-ecs-patterns'
 import * as iam from '@aws-cdk/aws-iam'
 import * as codebuild from '@aws-cdk/aws-codebuild'
-import * as codecommit from '@aws-cdk/aws-codecommit'
-import * as targets from '@aws-cdk/aws-events-targets'
-import * as codedeploy from '@aws-cdk/aws-codedeploy'
 import * as codepipeline from '@aws-cdk/aws-codepipeline'
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions'
-import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets'
-import * as ecrdeploy from 'cdk-ecr-deployment'
+import * as ssm from '@aws-cdk/aws-ssm'
+
+import { AppCredentials, S3Credentials } from './credentials-stack'
+import { DbCredentials } from './rds-stack'
+
+export interface BackendStackProps extends cdk.StackProps {
+  vpc: ec2.Vpc
+  dbInstance: rds.DatabaseInstance
+  region: any
+  account: any
+  appCredentials: AppCredentials
+  s3Credentials: S3Credentials
+  dbCredentials: DbCredentials
+}
 
 export class InfrastructuresStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: cdk.Construct, id: string, props: BackendStackProps) {
     super(scope, id, props)
-
-    // const imageTag = this.node.tryGetContext('imageTag')
-
-    /**
-     * Create a new VPC with single NAT Gateway
-     */
-    const vpc = new ec2.Vpc(this, 'picme-ecs-cdk-vpc', {
-      cidr: '10.0.0.0/16',
-      natGateways: 1,
-      maxAzs: 2,
-    })
 
     const clusterAdmin = new iam.Role(this, 'PickmeAdminRole', {
       assumedBy: new iam.AccountRootPrincipal(),
     })
 
-    const cluster = new ecs.Cluster(this, 'picme-ecs-cluster', {
-      vpc: vpc,
+    const cluster = new ecs.Cluster(this, 'pickme-ecs-cluster', {
+      vpc: props.vpc,
     })
 
     const logging = new ecs.AwsLogDriver({
@@ -56,17 +55,7 @@ export class InfrastructuresStack extends cdk.Stack {
       'pickme-backend-ecr-repo'
     )
 
-    // const image = new DockerImageAsset(this, 'MyBuildImage', {
-    //   directory: '../',
-    // })
-    // //upload docker image to ecr
-    // new ecrdeploy.ECRDeployment(this, 'DeployDockerImage', {
-    //   src: new ecrdeploy.DockerImageName(image.imageUri),
-    //   dest: new ecrdeploy.DockerImageName(`${ecrRepo.repositoryUri}`),
-    // })
-
     // ***ECS Contructs***
-
     const executionRolePolicy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       resources: ['*'],
@@ -87,9 +76,41 @@ export class InfrastructuresStack extends cdk.Stack {
     taskDef.addToExecutionRolePolicy(executionRolePolicy)
 
     const container = taskDef.addContainer('pickme-app', {
-      // image: ecs.ContainerImage.fromEcrRepository(ecrRepo, imageTag),
       // tag: latest
       image: ecs.ContainerImage.fromEcrRepository(ecrRepo),
+      secrets: {
+        JWT_SECRET: ecs.Secret.fromSsmParameter(
+          props.appCredentials.JWT_SECRET
+        ),
+        ACCESS_KEY_ID: ecs.Secret.fromSsmParameter(
+          props.s3Credentials.ACCESS_KEY_ID
+        ),
+        SECRET_ACCESS_KEY: ecs.Secret.fromSsmParameter(
+          props.s3Credentials.SECRET_ACCESS_KEY
+        ),
+        DB_USER: ecs.Secret.fromSsmParameter(
+          ssm.StringParameter.fromSecureStringParameterAttributes(
+            this,
+            '/pickme/mysql/db_username',
+            { parameterName: '/pickme/mysql/db_username', version: 1 }
+          )
+        ),
+        DB_PASS: ecs.Secret.fromSsmParameter(
+          ssm.StringParameter.fromSecureStringParameterAttributes(
+            this,
+            '/pickme/mysql/db_password',
+            { parameterName: '/pickme/mysql/db_password', version: 1 }
+          )
+        ),
+      },
+      environment: {
+        NODE_ENV: 'production',
+        PORT: props.appCredentials.PORT,
+        S3_BUCKET_NAME: props.s3Credentials.S3_BUCKET_NAME,
+        DB_HOST: props.dbCredentials.DB_HOST,
+        DB_PORT: props.dbCredentials.DB_PORT,
+        DB_NAME: props.dbCredentials.DB_NAME,
+      },
       logging,
     })
 
@@ -114,6 +135,12 @@ export class InfrastructuresStack extends cdk.Stack {
     const scaling = fargateService.service.autoScaleTaskCount({
       maxCapacity: 2,
     })
+
+    // props.dbInstance.connections.allowFrom(
+    //   fargateService.service,
+    //   ec2.Port.tcp(+props.dbInstance.dbInstanceEndpointPort)
+    // )
+
     // scaling.scaleOnCpuUtilization('CpuScaling', {
     //   targetUtilizationPercent: 10,
     //   scaleInCooldown: cdk.Duration.seconds(60),
@@ -192,7 +219,6 @@ export class InfrastructuresStack extends cdk.Stack {
       repo: 'dnd-5th-1-backend',
       branch: 'main',
       oauthToken: cdk.SecretValue.secretsManager('github-token'),
-      //oauthToken: cdk.SecretValue.plainText('<plain-text>'),
       output: sourceOutput,
     })
 
@@ -217,7 +243,6 @@ export class InfrastructuresStack extends cdk.Stack {
     })
 
     // PIPELINE STAGES
-
     new codepipeline.Pipeline(this, 'PickmeECSPipeline', {
       stages: [
         {

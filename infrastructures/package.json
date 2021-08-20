@@ -31,6 +31,8 @@
     "@aws-cdk/aws-ecs": "^1.117.0",
     "@aws-cdk/aws-ecs-patterns": "^1.117.0",
     "@aws-cdk/aws-events-targets": "^1.117.0",
+    "@aws-cdk/aws-rds": "1.117.0",
+    "@aws-cdk/aws-secretsmanager": "^1.117.0",
     "@aws-cdk/core": "^1.117.0",
     "cdk-ecr-deployment": "^0.0.60",
     "source-map-support": "^0.5.19"

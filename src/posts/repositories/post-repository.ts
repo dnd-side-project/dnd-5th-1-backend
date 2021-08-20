@@ -31,6 +31,9 @@ export class PostRepository implements IPostRepository {
     .addSelect('u.nickname')
     .addSelect('u.imageUrl')
     .loadRelationCountAndMap('p.participantsNum', 'p.votes')
+    .orderBy('p.createdAt', 'DESC')
+    .skip(page)
+    .limit(limit)
     .getMany()
     list.forEach(post => {
       post.images = [post.images[0], post.images[1]]
@@ -39,6 +42,15 @@ export class PostRepository implements IPostRepository {
     } catch(error) {
       console.log('###########: ' + error.code)
     }
+  }
+
+  public async test() {
+    const result = await this.ormRepository
+    .createQueryBuilder('p')
+    .leftJoinAndSelect('p.user', 'u')
+    .getRawMany()
+
+    return result
   }
 
   public async findPostById(postId: UniqueEntityId): Promise<Post> {
@@ -79,6 +91,7 @@ export class PostRepository implements IPostRepository {
     .createQueryBuilder('p')
     .leftJoin('p.images', 'pi')
     .leftJoin('p.votes', 'v')
+    .leftJoin('p.user', 'u')
     .where('p.id = :postId', { postId })
     .select(['pi.id AS id',
     'pi.imageUrl AS imageUrl',
@@ -86,9 +99,13 @@ export class PostRepository implements IPostRepository {
      'pi.isFirstPick AS isFirstPick',
       'p.expiredAt AS expiredAt',
       'p.title AS title',
-      'p.userId AS userId'])
+      'p.userId AS userId',
+      'u.nickname AS nickname',
+      'u.imageUrl AS userImageProfile'])      
     .loadRelationCountAndMap('p.participantsNum', 'p.votes')
     .getRawMany()
+
+    console.log(query)
 
     let votesResult: [VoteModel[], number]
     let images = []
@@ -98,6 +115,8 @@ export class PostRepository implements IPostRepository {
     let votedImageIndex = null
     let title = ''
     let expiredAt = ''
+    let nickname = ''
+    let userProfileUrl = ''
     // second, according to the way above,
     // I should map image information to the raw query result.
     await Promise.all(
@@ -111,7 +130,12 @@ export class PostRepository implements IPostRepository {
           .createQueryBuilder('v')
           .where('v.postImageId = :imageId', { imageId })
           .getManyAndCount()
-    
+
+
+          if (i === 0) {
+            nickname = image.nickname
+            userProfileUrl = image.userImageProfile
+          }
           if (image.postId === postId) {
             title = image.title
             expiredAt = image.expiredAt
@@ -137,6 +161,8 @@ export class PostRepository implements IPostRepository {
     )
 
     const result = {
+      nickname,
+      userProfileUrl,
       firstPickIndex,
       isVoted,
       participantsNum,
