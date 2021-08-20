@@ -44,6 +44,8 @@ export class CreatePostImages {
         return new CreateImagesError.S3UploadFailed()
       }
 
+      console.log(inputDto.metadata)
+
       const postId = new UniqueEntityId(inputDto.postId)
       const originalName = imageFile.originalname
       const isFirstPick = idx === inputDto.metadata.isFirstPick ? true : false
