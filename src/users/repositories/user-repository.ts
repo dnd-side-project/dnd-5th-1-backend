@@ -34,6 +34,41 @@ export class UserRepository implements IUserRepository {
     return user ? UserMapper.toDomain(user) : null
   }
 
+  public async getUserProfile(user: User) {
+    try {
+      const userId = user.id.toString()
+      const createdPosts = await this.ormRepository
+        .createQueryBuilder('p')
+        .innerJoinAndSelect('p.posts', 'posts', 'posts.userId = :userId', {
+          userId: userId,
+        })
+        .getOne()
+
+      const attendedPosts = await this.ormRepository
+        .createQueryBuilder('p')
+        .innerJoinAndSelect('p.votes', 'votes', 'votes.userId = :userId', {
+          userId: userId,
+        })
+        .getOne()
+
+      const numOfCreatedPosts = createdPosts?.posts?.length ?? 0
+      const numOfAttendedPosts = attendedPosts?.votes?.length ?? 0
+
+      console.log(
+        `numOfCreatedPosts: ${numOfCreatedPosts}, 
+        numOfAttendedPosts: ${numOfAttendedPosts}`
+      )
+
+      return {
+        numOfCreatedPosts: numOfCreatedPosts,
+        numOfAttendedPosts: numOfAttendedPosts,
+      }
+    } catch (error) {
+      console.log(error)
+      throw Error(error)
+    }
+  }
+
   public async createAndSave(user: User): Promise<User | null> {
     const createdUser = await this.ormRepository.save(
       UserMapper.toPersistence(user)
