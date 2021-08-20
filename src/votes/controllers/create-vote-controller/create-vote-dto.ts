@@ -1,11 +1,11 @@
-export class CreateVoteInputDto {
+export interface CreateVoteInputDto {
   userId: string
   postId: string
   postImageId: string
   category: string
 }
 
-export class CreateVoteOutputDto {
+export interface CreateVoteOutputDto {
   userId: string
   postId: string
 }
