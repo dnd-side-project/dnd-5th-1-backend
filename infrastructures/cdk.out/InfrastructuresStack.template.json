@@ -1,0 +1,1998 @@
+{
+  "Resources": {
+    "PickmeAdminRole8BE8EA47": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/PickmeAdminRole/Resource"
+      }
+    },
+    "pickmeecscluster3FA44AE3": {
+      "Type": "AWS::ECS::Cluster",
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/pickme-ecs-cluster/Resource"
+      }
+    },
+    "pickmeecstaskRoleInfrastructuresStack426FEB7D": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "RoleName": "ecs-taskRole-InfrastructuresStack"
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/pickme-ecs-taskRole-InfrastructuresStack/Resource"
+      }
+    },
+    "pickmeecstaskdef84CF6EC3": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Environment": [
+              {
+                "Name": "NODE_ENV",
+                "Value": "production"
+              },
+              {
+                "Name": "PORT",
+                "Value": {
+                  "Fn::ImportValue": "CredentialsStack:ExportsOutputRefpickmeportParameter37E68BD1"
+                }
+              },
+              {
+                "Name": "S3_BUCKET_NAME",
+                "Value": {
+                  "Fn::ImportValue": "CredentialsStack:ExportsOutputRefpickmes3bucketnameParameter4244A1C8"
+                }
+              },
+              {
+                "Name": "DB_HOST",
+                "Value": {
+                  "Fn::ImportValue": "RdsStack:ExportsOutputFnGetAttdbinstance310A317FEndpointAddress0F517642"
+                }
+              },
+              {
+                "Name": "DB_PORT",
+                "Value": {
+                  "Fn::ImportValue": "RdsStack:ExportsOutputFnGetAttdbinstance310A317FEndpointPort9DBCDC25"
+                }
+              },
+              {
+                "Name": "DB_NAME",
+                "Value": "pickme_db"
+              }
+            ],
+            "Essential": true,
+            "Image": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ".dkr.ecr.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/pickme-backend-ecr-repo:latest"
+                ]
+              ]
+            },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "pickmeecstaskdefpickmeappLogGroup518FC758"
+                },
+                "awslogs-stream-prefix": "pickme-ecs-logs",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
+            "Name": "pickme-app",
+            "PortMappings": [
+              {
+                "ContainerPort": 3000,
+                "Protocol": "tcp"
+              }
+            ],
+            "Secrets": [
+              {
+                "Name": "JWT_SECRET",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":parameter/pickme/jwt_secret"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Name": "ACCESS_KEY_ID",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":parameter/pickme/s3/access_key_id"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Name": "SECRET_ACCESS_KEY",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":parameter/pickme/s3/secret_access_key"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Name": "DB_USER",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":parameter/pickme/mysql/db_username"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Name": "DB_PASS",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":parameter/pickme/mysql/db_password"
+                    ]
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "pickmeecstaskdefExecutionRole7747FFB9",
+            "Arn"
+          ]
+        },
+        "Family": "InfrastructuresStackpickmeecstaskdef0B3C4E85",
+        "Memory": "512",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "pickmeecstaskRoleInfrastructuresStack426FEB7D",
+            "Arn"
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/pickme-ecs-taskdef/Resource"
+      }
+    },
+    "pickmeecstaskdefExecutionRole7747FFB9": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/pickme-ecs-taskdef/ExecutionRole/Resource"
+      }
+    },
+    "pickmeecstaskdefExecutionRoleDefaultPolicy24FF352D": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:GetAuthorizationToken",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":repository/pickme-backend-ecr-repo"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "pickmeecstaskdefpickmeappLogGroup518FC758",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "ssm:DescribeParameters",
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+                "ssm:GetParameterHistory"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ssm:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":parameter/pickme/jwt_secret"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "ssm:DescribeParameters",
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+                "ssm:GetParameterHistory"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ssm:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":parameter/pickme/s3/access_key_id"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "ssm:DescribeParameters",
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+                "ssm:GetParameterHistory"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ssm:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":parameter/pickme/s3/secret_access_key"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "ssm:DescribeParameters",
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+                "ssm:GetParameterHistory"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ssm:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":parameter/pickme/mysql/db_username"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "ssm:DescribeParameters",
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+                "ssm:GetParameterHistory"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ssm:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":parameter/pickme/mysql/db_password"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "pickmeecstaskdefExecutionRoleDefaultPolicy24FF352D",
+        "Roles": [
+          {
+            "Ref": "pickmeecstaskdefExecutionRole7747FFB9"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/pickme-ecs-taskdef/ExecutionRole/DefaultPolicy/Resource"
+      }
+    },
+    "pickmeecstaskdefpickmeappLogGroup518FC758": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/pickme-ecs-taskdef/pickme-app/LogGroup/Resource"
+      }
+    },
+    "pickmeecsserviceLBC9250B44": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Properties": {
+        "LoadBalancerAttributes": [
+          {
+            "Key": "deletion_protection.enabled",
+            "Value": "false"
+          }
+        ],
+        "Scheme": "internet-facing",
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "pickmeecsserviceLBSecurityGroup1F18FE63",
+              "GroupId"
+            ]
+          }
+        ],
+        "Subnets": [
+          {
+            "Fn::ImportValue": "VpcStack:ExportsOutputRefpickmeecscdkvpcpickmepublicsubnet1Subnet1SubnetA0873145C88EE1BC"
+          },
+          {
+            "Fn::ImportValue": "VpcStack:ExportsOutputRefpickmeecscdkvpcpickmepublicsubnet1Subnet2SubnetD3D4A820FE375FA3"
+          }
+        ],
+        "Type": "application"
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/pickme-ecs-service/LB/Resource"
+      }
+    },
+    "pickmeecsserviceLBSecurityGroup1F18FE63": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Automatically created Security Group for ELB InfrastructuresStackpickmeecsserviceLB20E17FBE",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow from anyone on port 80",
+            "FromPort": 80,
+            "IpProtocol": "tcp",
+            "ToPort": 80
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": "VpcStack:ExportsOutputRefpickmeecscdkvpc71CBFF4B72115341"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/pickme-ecs-service/LB/SecurityGroup/Resource"
+      }
+    },
+    "pickmeecsserviceLBSecurityGrouptoInfrastructuresStackpickmeecsserviceServiceSecurityGroup6F6E13EB3000EDA60AE8": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "GroupId": {
+          "Fn::GetAtt": [
+            "pickmeecsserviceLBSecurityGroup1F18FE63",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "pickmeecsserviceServiceSecurityGroup8332B522",
+            "GroupId"
+          ]
+        },
+        "FromPort": 3000,
+        "ToPort": 3000
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/pickme-ecs-service/LB/SecurityGroup/to InfrastructuresStackpickmeecsserviceServiceSecurityGroup6F6E13EB:3000"
+      }
+    },
+    "pickmeecsserviceLBPublicListener11B07287": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "pickmeecsserviceLBPublicListenerECSGroup212B0194"
+            },
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "pickmeecsserviceLBC9250B44"
+        },
+        "Port": 80,
+        "Protocol": "HTTP"
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/pickme-ecs-service/LB/PublicListener/Resource"
+      }
+    },
+    "pickmeecsserviceLBPublicListenerECSGroup212B0194": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Properties": {
+        "Port": 80,
+        "Protocol": "HTTP",
+        "TargetType": "ip",
+        "VpcId": {
+          "Fn::ImportValue": "VpcStack:ExportsOutputRefpickmeecscdkvpc71CBFF4B72115341"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/pickme-ecs-service/LB/PublicListener/ECSGroup/Resource"
+      }
+    },
+    "pickmeecsserviceService10877C38": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "Cluster": {
+          "Ref": "pickmeecscluster3FA44AE3"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50
+        },
+        "DesiredCount": 1,
+        "EnableECSManagedTags": false,
+        "HealthCheckGracePeriodSeconds": 60,
+        "LaunchType": "FARGATE",
+        "LoadBalancers": [
+          {
+            "ContainerName": "pickme-app",
+            "ContainerPort": 3000,
+            "TargetGroupArn": {
+              "Ref": "pickmeecsserviceLBPublicListenerECSGroup212B0194"
+            }
+          }
+        ],
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "pickmeecsserviceServiceSecurityGroup8332B522",
+                  "GroupId"
+                ]
+              }
+            ],
+            "Subnets": [
+              {
+                "Fn::ImportValue": "VpcStack:ExportsOutputRefpickmeecscdkvpcpickmeprivatesubnet1Subnet1SubnetC723228767B1D01D"
+              },
+              {
+                "Fn::ImportValue": "VpcStack:ExportsOutputRefpickmeecscdkvpcpickmeprivatesubnet1Subnet2SubnetBEB5DDDF7912AE13"
+              }
+            ]
+          }
+        },
+        "TaskDefinition": {
+          "Ref": "pickmeecstaskdef84CF6EC3"
+        }
+      },
+      "DependsOn": [
+        "pickmeecsserviceLBPublicListenerECSGroup212B0194",
+        "pickmeecsserviceLBPublicListener11B07287"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/pickme-ecs-service/Service/Service"
+      }
+    },
+    "pickmeecsserviceServiceSecurityGroup8332B522": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "InfrastructuresStack/pickme-ecs-service/Service/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": "VpcStack:ExportsOutputRefpickmeecscdkvpc71CBFF4B72115341"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/pickme-ecs-service/Service/SecurityGroup/Resource"
+      }
+    },
+    "pickmeecsserviceServiceSecurityGroupfromInfrastructuresStackpickmeecsserviceLBSecurityGroupFD0F99C83000BFD76B79": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "Load balancer to target",
+        "FromPort": 3000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "pickmeecsserviceServiceSecurityGroup8332B522",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "pickmeecsserviceLBSecurityGroup1F18FE63",
+            "GroupId"
+          ]
+        },
+        "ToPort": 3000
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/pickme-ecs-service/Service/SecurityGroup/from InfrastructuresStackpickmeecsserviceLBSecurityGroupFD0F99C8:3000"
+      }
+    },
+    "pickmeecsserviceServiceTaskCountTargetF2387C45": {
+      "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+      "Properties": {
+        "MaxCapacity": 2,
+        "MinCapacity": 1,
+        "ResourceId": {
+          "Fn::Join": [
+            "",
+            [
+              "service/",
+              {
+                "Ref": "pickmeecscluster3FA44AE3"
+              },
+              "/",
+              {
+                "Fn::GetAtt": [
+                  "pickmeecsserviceService10877C38",
+                  "Name"
+                ]
+              }
+            ]
+          ]
+        },
+        "RoleARN": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":iam::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
+            ]
+          ]
+        },
+        "ScalableDimension": "ecs:service:DesiredCount",
+        "ServiceNamespace": "ecs"
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/pickme-ecs-service/Service/TaskCount/Target/Resource"
+      }
+    },
+    "PickmeCodeBuildProjectRole10E1EFC4": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codebuild.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/PickmeCodeBuildProject/Role/Resource"
+      }
+    },
+    "PickmeCodeBuildProjectRoleDefaultPolicyE26184AE": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":logs:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":log-group:/aws/codebuild/",
+                      {
+                        "Ref": "PickmeCodeBuildProjectCE364645"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":logs:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":log-group:/aws/codebuild/",
+                      {
+                        "Ref": "PickmeCodeBuildProjectCE364645"
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "codebuild:CreateReportGroup",
+                "codebuild:CreateReport",
+                "codebuild:UpdateReport",
+                "codebuild:BatchPutTestCases",
+                "codebuild:BatchPutCodeCoverages"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":codebuild:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":report-group/",
+                    {
+                      "Ref": "PickmeCodeBuildProjectCE364645"
+                    },
+                    "-*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PickmeECSPipelineArtifactsBucketD5DAA2FA",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PickmeECSPipelineArtifactsBucketD5DAA2FA",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PickmeECSPipelineArtifactsBucketEncryptionKeyC6FA101F",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PickmeECSPipelineArtifactsBucketEncryptionKeyC6FA101F",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":repository/pickme-backend-ecr-repo"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "ecr:PutImage",
+                "ecr:InitiateLayerUpload",
+                "ecr:UploadLayerPart",
+                "ecr:CompleteLayerUpload"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":repository/pickme-backend-ecr-repo"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "ecs:DescribeCluster",
+                "ecr:GetAuthorizationToken",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "pickmeecscluster3FA44AE3",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PickmeCodeBuildProjectRoleDefaultPolicyE26184AE",
+        "Roles": [
+          {
+            "Ref": "PickmeCodeBuildProjectRole10E1EFC4"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/PickmeCodeBuildProject/Role/DefaultPolicy/Resource"
+      }
+    },
+    "PickmeCodeBuildProjectCE364645": {
+      "Type": "AWS::CodeBuild::Project",
+      "Properties": {
+        "Artifacts": {
+          "Type": "NO_ARTIFACTS"
+        },
+        "Environment": {
+          "ComputeType": "BUILD_GENERAL1_SMALL",
+          "EnvironmentVariables": [
+            {
+              "Name": "CLUSTER_NAME",
+              "Type": "PLAINTEXT",
+              "Value": {
+                "Ref": "pickmeecscluster3FA44AE3"
+              }
+            },
+            {
+              "Name": "ECR_REPO_URI",
+              "Type": "PLAINTEXT",
+              "Value": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ".dkr.ecr.",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ".",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    },
+                    "/pickme-backend-ecr-repo"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Image": "aws/codebuild/amazonlinux2-x86_64-standard:2.0",
+          "ImagePullCredentialsType": "CODEBUILD",
+          "PrivilegedMode": true,
+          "Type": "LINUX_CONTAINER"
+        },
+        "ServiceRole": {
+          "Fn::GetAtt": [
+            "PickmeCodeBuildProjectRole10E1EFC4",
+            "Arn"
+          ]
+        },
+        "Source": {
+          "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"pre_build\": {\n      \"commands\": [\n        \"env\",\n        \"export TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION}\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"echo Build started on `date`\",\n        \"docker build -t $ECR_REPO_URI:$TAG .\",\n        \"$(aws ecr get-login --no-include-email)\",\n        \"docker push $ECR_REPO_URI:$TAG\"\n      ]\n    },\n    \"post_build\": {\n      \"commands\": [\n        \"echo \\\"In Post-Build Stage\\\"\",\n        \"printf '[{\\\"name\\\":\\\"pickme-app\\\",\\\"imageUri\\\":\\\"%s\\\"}]' $ECR_REPO_URI:$TAG > imagedefinitions.json\",\n        \"pwd; ls -al; cat imagedefinitions.json\",\n        \"echo Build completed on `date`\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"files\": [\n      \"imagedefinitions.json\"\n    ]\n  }\n}",
+          "Location": "https://github.com/dnd-side-project/dnd-5th-1-backend.git",
+          "ReportBuildStatus": true,
+          "Type": "GITHUB"
+        },
+        "EncryptionKey": {
+          "Fn::GetAtt": [
+            "PickmeECSPipelineArtifactsBucketEncryptionKeyC6FA101F",
+            "Arn"
+          ]
+        },
+        "Name": "InfrastructuresStack",
+        "Triggers": {
+          "FilterGroups": [
+            [
+              {
+                "Pattern": "PULL_REQUEST_MERGED",
+                "Type": "EVENT"
+              },
+              {
+                "Pattern": "refs/heads/main",
+                "Type": "HEAD_REF"
+              }
+            ]
+          ],
+          "Webhook": true
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/PickmeCodeBuildProject/Resource"
+      }
+    },
+    "PickmeECSPipelineArtifactsBucketEncryptionKeyC6FA101F": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/PickmeECSPipeline/ArtifactsBucketEncryptionKey/Resource"
+      }
+    },
+    "PickmeECSPipelineArtifactsBucketEncryptionKeyAlias35E624FC": {
+      "Type": "AWS::KMS::Alias",
+      "Properties": {
+        "AliasName": "alias/codepipeline-infrastructuresstackpickmeecspipelineabbd129c",
+        "TargetKeyId": {
+          "Fn::GetAtt": [
+            "PickmeECSPipelineArtifactsBucketEncryptionKeyC6FA101F",
+            "Arn"
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/PickmeECSPipeline/ArtifactsBucketEncryptionKeyAlias/Resource"
+      }
+    },
+    "PickmeECSPipelineArtifactsBucketD5DAA2FA": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "KMSMasterKeyID": {
+                  "Fn::GetAtt": [
+                    "PickmeECSPipelineArtifactsBucketEncryptionKeyC6FA101F",
+                    "Arn"
+                  ]
+                },
+                "SSEAlgorithm": "aws:kms"
+              }
+            }
+          ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/PickmeECSPipeline/ArtifactsBucket/Resource"
+      }
+    },
+    "PickmeECSPipelineRoleAA084A18": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codepipeline.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/PickmeECSPipeline/Role/Resource"
+      }
+    },
+    "PickmeECSPipelineRoleDefaultPolicy08D13B5E": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PickmeECSPipelineArtifactsBucketD5DAA2FA",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PickmeECSPipelineArtifactsBucketD5DAA2FA",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PickmeECSPipelineArtifactsBucketEncryptionKeyC6FA101F",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PickmeECSPipelineBuildCodeBuildCodePipelineActionRoleD02335A3",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PickmeECSPipelineApproveCodePipelineActionRole553A93E9",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PickmeECSPipelineDeploytoECSDeployActionCodePipelineActionRole64637ACC",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PickmeECSPipelineRoleDefaultPolicy08D13B5E",
+        "Roles": [
+          {
+            "Ref": "PickmeECSPipelineRoleAA084A18"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/PickmeECSPipeline/Role/DefaultPolicy/Resource"
+      }
+    },
+    "PickmeECSPipeline107056D8": {
+      "Type": "AWS::CodePipeline::Pipeline",
+      "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "PickmeECSPipelineRoleAA084A18",
+            "Arn"
+          ]
+        },
+        "Stages": [
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Source",
+                  "Owner": "ThirdParty",
+                  "Provider": "GitHub",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "Owner": "dnd-side-project",
+                  "Repo": "dnd-5th-1-backend",
+                  "Branch": "main",
+                  "OAuthToken": "{{resolve:secretsmanager:github-token:SecretString:::}}",
+                  "PollForSourceChanges": false
+                },
+                "Name": "GitHub_Source",
+                "OutputArtifacts": [
+                  {
+                    "Name": "Artifact_Source_GitHub_Source"
+                  }
+                ],
+                "RunOrder": 1
+              }
+            ],
+            "Name": "Source"
+          },
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Build",
+                  "Owner": "AWS",
+                  "Provider": "CodeBuild",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "ProjectName": {
+                    "Ref": "PickmeCodeBuildProjectCE364645"
+                  }
+                },
+                "InputArtifacts": [
+                  {
+                    "Name": "Artifact_Source_GitHub_Source"
+                  }
+                ],
+                "Name": "CodeBuild",
+                "OutputArtifacts": [
+                  {
+                    "Name": "Artifact_Build_CodeBuild"
+                  }
+                ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PickmeECSPipelineBuildCodeBuildCodePipelineActionRoleD02335A3",
+                    "Arn"
+                  ]
+                },
+                "RunOrder": 1
+              }
+            ],
+            "Name": "Build"
+          },
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Approval",
+                  "Owner": "AWS",
+                  "Provider": "Manual",
+                  "Version": "1"
+                },
+                "Name": "Approve",
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PickmeECSPipelineApproveCodePipelineActionRole553A93E9",
+                    "Arn"
+                  ]
+                },
+                "RunOrder": 1
+              }
+            ],
+            "Name": "Approve"
+          },
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Deploy",
+                  "Owner": "AWS",
+                  "Provider": "ECS",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "ClusterName": {
+                    "Ref": "pickmeecscluster3FA44AE3"
+                  },
+                  "ServiceName": {
+                    "Fn::GetAtt": [
+                      "pickmeecsserviceService10877C38",
+                      "Name"
+                    ]
+                  },
+                  "FileName": "imagedefinitions.json"
+                },
+                "InputArtifacts": [
+                  {
+                    "Name": "Artifact_Build_CodeBuild"
+                  }
+                ],
+                "Name": "DeployAction",
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PickmeECSPipelineDeploytoECSDeployActionCodePipelineActionRole64637ACC",
+                    "Arn"
+                  ]
+                },
+                "RunOrder": 1
+              }
+            ],
+            "Name": "Deploy-to-ECS"
+          }
+        ],
+        "ArtifactStore": {
+          "EncryptionKey": {
+            "Id": {
+              "Fn::GetAtt": [
+                "PickmeECSPipelineArtifactsBucketEncryptionKeyC6FA101F",
+                "Arn"
+              ]
+            },
+            "Type": "KMS"
+          },
+          "Location": {
+            "Ref": "PickmeECSPipelineArtifactsBucketD5DAA2FA"
+          },
+          "Type": "S3"
+        }
+      },
+      "DependsOn": [
+        "PickmeECSPipelineRoleDefaultPolicy08D13B5E",
+        "PickmeECSPipelineRoleAA084A18"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/PickmeECSPipeline/Resource"
+      }
+    },
+    "PickmeECSPipelineSourceGitHubSourceWebhookResource057AB889": {
+      "Type": "AWS::CodePipeline::Webhook",
+      "Properties": {
+        "Authentication": "GITHUB_HMAC",
+        "AuthenticationConfiguration": {
+          "SecretToken": "{{resolve:secretsmanager:github-token:SecretString:::}}"
+        },
+        "Filters": [
+          {
+            "JsonPath": "$.ref",
+            "MatchEquals": "refs/heads/{Branch}"
+          }
+        ],
+        "TargetAction": "GitHub_Source",
+        "TargetPipeline": {
+          "Ref": "PickmeECSPipeline107056D8"
+        },
+        "TargetPipelineVersion": 1,
+        "RegisterWithThirdParty": true
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/PickmeECSPipeline/Source/GitHub_Source/WebhookResource"
+      }
+    },
+    "PickmeECSPipelineBuildCodeBuildCodePipelineActionRoleD02335A3": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/PickmeECSPipeline/Build/CodeBuild/CodePipelineActionRole/Resource"
+      }
+    },
+    "PickmeECSPipelineBuildCodeBuildCodePipelineActionRoleDefaultPolicyD1F85F1F": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "codebuild:BatchGetBuilds",
+                "codebuild:StartBuild",
+                "codebuild:StopBuild"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PickmeCodeBuildProjectCE364645",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PickmeECSPipelineBuildCodeBuildCodePipelineActionRoleDefaultPolicyD1F85F1F",
+        "Roles": [
+          {
+            "Ref": "PickmeECSPipelineBuildCodeBuildCodePipelineActionRoleD02335A3"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/PickmeECSPipeline/Build/CodeBuild/CodePipelineActionRole/DefaultPolicy/Resource"
+      }
+    },
+    "PickmeECSPipelineApproveCodePipelineActionRole553A93E9": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/PickmeECSPipeline/Approve/Approve/CodePipelineActionRole/Resource"
+      }
+    },
+    "PickmeECSPipelineDeploytoECSDeployActionCodePipelineActionRole64637ACC": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/PickmeECSPipeline/Deploy-to-ECS/DeployAction/CodePipelineActionRole/Resource"
+      }
+    },
+    "PickmeECSPipelineDeploytoECSDeployActionCodePipelineActionRoleDefaultPolicyC55479E3": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecs:DescribeServices",
+                "ecs:DescribeTaskDefinition",
+                "ecs:DescribeTasks",
+                "ecs:ListTasks",
+                "ecs:RegisterTaskDefinition",
+                "ecs:UpdateService"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "iam:PassRole",
+              "Condition": {
+                "StringEqualsIfExists": {
+                  "iam:PassedToService": [
+                    "ec2.amazonaws.com",
+                    "ecs-tasks.amazonaws.com"
+                  ]
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PickmeECSPipelineArtifactsBucketD5DAA2FA",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PickmeECSPipelineArtifactsBucketD5DAA2FA",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PickmeECSPipelineArtifactsBucketEncryptionKeyC6FA101F",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PickmeECSPipelineDeploytoECSDeployActionCodePipelineActionRoleDefaultPolicyC55479E3",
+        "Roles": [
+          {
+            "Ref": "PickmeECSPipelineDeploytoECSDeployActionCodePipelineActionRole64637ACC"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/PickmeECSPipeline/Deploy-to-ECS/DeployAction/CodePipelineActionRole/DefaultPolicy/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAAE31SyU7DMBD9Fu6uISziCi2LEEhULRJn1xnCNK4n8lJURfl3xk5awiJOfn6zvOfxFLIoLuXJ0ZX68BNd1setJgeyXQala7EAT9FpELM3+xxDE4OYkfXBRR0SN45zoMSAZDuRerWoNrJdkMnBfM7JoN6la486AdrLdmaiD+ByjwHeKVepAC/K1zfwhjb3TQk/GbJBoQU34obaJbgt9s72cKmVUSuT284o2pAMOLmAhjwGcrup8iAMVWzqiap7R7FJ9Xuc/U4aFdii9fK6afgVKok+kSqn3NxqKH/og1E+oDacscoZaKvtqWz/rna93ug+zkMejh1y9ngUf2FlCAfbo2tyzppL0NFh2B1S/iduKwfe/6IfbOb5m7+kVQzkebz8OJY5zDkZyPXfmE5oKmEV0ZSynTtaQ79NA+zDDTbA7XgV5wPKKSP8Cqt3oroT9YY/7BHyZqXj2qDKtjPohD+T7TTquvfSo67rhGUZufbH2+JcFheyOFp7xInjxcANyEV/fgLrBj4gIQMAAA=="
+      },
+      "Metadata": {
+        "aws:cdk:path": "InfrastructuresStack/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Outputs": {
+    "pickmeecsserviceLoadBalancerDNSF3401B20": {
+      "Value": {
+        "Fn::GetAtt": [
+          "pickmeecsserviceLBC9250B44",
+          "DNSName"
+        ]
+      }
+    },
+    "pickmeecsserviceServiceURLA802B940": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "http://",
+            {
+              "Fn::GetAtt": [
+                "pickmeecsserviceLBC9250B44",
+                "DNSName"
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "LoadBalancerDNS": {
+      "Value": {
+        "Fn::GetAtt": [
+          "pickmeecsserviceLBC9250B44",
+          "DNSName"
+        ]
+      }
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-2"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

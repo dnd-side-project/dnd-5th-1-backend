@@ -1,6 +1,6 @@
 import { BaseController } from 'core/infra/base-controller'
 import { UseCaseError } from '../../core/infra/use-case-error'
-import { UserExists } from './social-signup-error'
+import * as SocialSigninErrors from './social-signup-error'
 import {
   SocialSignupInputDto,
   SocialSignupOutputDto,
@@ -24,8 +24,10 @@ export class SocialSignupController extends BaseController {
 
       if (result instanceof UseCaseError) {
         switch (result.constructor) {
-          case UserExists:
+          case SocialSigninErrors.UserExists:
             return this.alreadyExists(result.message)
+          case SocialSigninErrors.InvalidVendor:
+            return this.forbidden(result.message)
         }
       } else {
         const outputDto: SocialSignupOutputDto = result
@@ -38,6 +40,7 @@ export class SocialSignupController extends BaseController {
         return this.ok(this.res, 200, {
           profilePictureImage: outputDto.user.imageUrl.value,
           nickname: outputDto.user.nickname.value,
+          vendor: outputDto.user.vendor.value,
         })
       }
     } catch (error: unknown) {

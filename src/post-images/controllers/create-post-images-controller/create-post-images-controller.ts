@@ -19,7 +19,7 @@ export class CreateImagesController extends BaseController {
     const dto: CreatePostImagesInputDto = {
       postId: this.req.params.post_id,
       imageFiles: this.req.files,
-      metadata: JSON.parse(this.req.body.metadata).metadata,
+      metadata: JSON.parse(this.req.body.metadata),
     } as CreatePostImagesInputDto
 
     console.log(
