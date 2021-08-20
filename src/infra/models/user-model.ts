@@ -45,9 +45,10 @@ export class UserModel {
 
   @Column('varchar', {
     name: 'image_url',
-    nullable: false,
+    nullable: true,
     comment: 'user profile image',
     length: 200,
+    default: () => Math.floor(Math.random() * 3 + 1).toString()
   })
   imageUrl: string
 
