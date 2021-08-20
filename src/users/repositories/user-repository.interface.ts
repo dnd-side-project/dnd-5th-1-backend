@@ -10,4 +10,5 @@ export interface IUserRepository extends Repository<User> {
     vendorAccountId: string
   ): Promise<User | null>
   createAndSave(user: User): Promise<User | null>
+  getUserProfile(user: User)
 }

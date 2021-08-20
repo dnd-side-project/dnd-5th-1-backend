@@ -6,6 +6,7 @@ import postRouter from 'posts'
 import voteRouter from './votes'
 import imagesRouter from 'post-images'
 import { jwtCheck } from './middlewares/jwt-check'
+import userRouter from 'users'
 
 const PORT = parseInt(process.env.PORT!, 10)
 const corsOption: CorsOptions = {
@@ -40,6 +41,7 @@ export default class Server {
     })
     this.app.use('/v1/auth', authRouter)
     this.app.use('/v1/votes', jwtCheck, voteRouter)
+    this.app.use('/v1/users', jwtCheck, userRouter)
     this.app.use('/v1/post-images', jwtCheck, imagesRouter)
     this.app.use('/v1/posts', postRouter)
   }
