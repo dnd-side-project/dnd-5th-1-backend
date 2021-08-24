@@ -28,6 +28,7 @@ export interface IRetrievePost {
 }
 
 export interface RetrievePostQueryObject {
+  id: string
   imageUrl: string
   isFirstPick: number
   pickedNum: number
