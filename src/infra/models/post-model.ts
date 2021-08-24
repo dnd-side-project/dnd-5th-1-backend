@@ -29,7 +29,9 @@ export class PostModel {
   @JoinColumn({ name: 'user_id' })
   user: UserModel
 
-  @OneToMany(() => PostImageModel, (image) => image.post)
+  @OneToMany(() => PostImageModel, (image) => image.post, {
+    cascade: true
+  })
   images: PostImageModel[]
 
   @OneToMany(() => VoteModel, (vote) => vote.post, {

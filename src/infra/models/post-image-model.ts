@@ -24,11 +24,15 @@ export class PostImageModel {
   })
   postId: string
 
-  @ManyToOne(() => PostModel, (post) => post.images)
+  @ManyToOne(() => PostModel, (post) => post.images, {
+    onDelete: 'CASCADE'
+  })
   @JoinColumn({ name: 'post_id' })
   post: PostModel
 
-  @OneToOne(() => VoteModel, (vote) => vote.postImage)
+  @OneToOne(() => VoteModel, (vote) => vote.postImage, {
+    onDelete: 'CASCADE'
+  })
   vote: VoteModel
 
   // varaibale for voted count

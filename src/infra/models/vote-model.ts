@@ -37,7 +37,9 @@ export class VoteModel {
   })
   postId: string
 
-  @ManyToOne(() => PostModel, (post) => post.votes)
+  @ManyToOne(() => PostModel, (post) => post.votes, {
+    onDelete: 'CASCADE'
+  })
   @JoinColumn({ name: 'post_id' })
   post: PostModel
 
