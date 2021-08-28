@@ -18,9 +18,7 @@ export class RetrievePost {
   public async execute(req: express.Request, inputDto: RetirevePostInputDto): Promise<Response> {
     try {
       const { postId } = inputDto
-
       const list = await this.postRepository.retrieve(req, postId)
-
       const outputDto: RetirevePostOutputDto = list
       return outputDto
     } catch (error) {
