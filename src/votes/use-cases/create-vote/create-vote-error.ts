@@ -8,6 +8,6 @@ export class InvalidCategory extends UseCaseError {
 
 export class AlreadyExists extends UseCaseError {
   constructor() {
-    super('Invalid Vote Category')
+    super('Already voted post')
   }
 }

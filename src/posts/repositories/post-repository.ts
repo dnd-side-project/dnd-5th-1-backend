@@ -27,14 +27,19 @@ export class PostRepository implements IPostRepository {
     .innerJoin('p.user', 'u')
     .leftJoin('p.votes', 'v')
     .leftJoin('p.images', 'pi')
+    .addSelect('pi.id')
     .addSelect('pi.thumbnailUrl')
     .addSelect('u.nickname')
     .addSelect('u.imageUrl')
     .loadRelationCountAndMap('p.participantsNum', 'p.votes')
     .orderBy('p.createdAt', 'DESC')
     .skip(page)
-    .limit(limit)
+    .take(limit)
     .getMany()
+
+    console.log(page)
+    console.log(limit)
+    console.log(list)
     list.forEach(post => {
       post.images = [post.images[0], post.images[1]]
     })
@@ -117,12 +122,13 @@ export class PostRepository implements IPostRepository {
     let expiredAt = ''
     let nickname = ''
     let userProfileUrl = ''
+    let index = 0
     // second, according to the way above,
     // I should map image information to the raw query result.
-    await Promise.all(
-      // watchout: promise.all executes iteration in parallel.
-      // should watch out race condition cases.
-      query.map(async (image, i) => {
+
+    // await Promise.all(
+      // query.forEach(async (image, i) => {
+        for (const image of query) {
         // assign each image information related with the post
           let imageInfoObject = {} as RetrievePostQueryObject
           const imageId = image.id
@@ -132,7 +138,7 @@ export class PostRepository implements IPostRepository {
           .getManyAndCount()
 
 
-          if (i === 0) {
+          if (index === 0) {
             nickname = image.nickname
             userProfileUrl = image.userImageProfile
           }
@@ -142,12 +148,10 @@ export class PostRepository implements IPostRepository {
           }
           imageInfoObject.id = image.id
           if (image.isFirstPick === 1) { 
-            firstPickIndex = i
-            console.log(firstPickIndex)
-            imageInfoObject.isFirstPick = 1 
+            imageInfoObject.isFirstPick = 1
           }
           if (votesResult[1] > 0) isVoted = true
-          if (image.userId = req.user) votedImageIndex = i
+          if (image.userId = req.user) votedImageIndex = index
           participantsNum += votesResult[1]
           imageInfoObject.pickedNum = votesResult[1]
           imageInfoObject.imageUrl = image.imageUrl
@@ -157,8 +161,15 @@ export class PostRepository implements IPostRepository {
           imageInfoObject.light = votesResult[0].filter(vote => vote.category === 'light').length
           imageInfoObject.skip = votesResult[0].filter(vote => vote.category === 'skip').length
           images.push(imageInfoObject)
-        })
-    )
+          index++
+        }
+    // )
+
+    images.forEach((image, i) => {
+      if (image.isFirstPick === 1) { 
+        firstPickIndex = i
+      }
+    })
 
     const result = {
       nickname,

@@ -4,7 +4,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
-  OneToOne,
   Column,
   JoinColumn,
 } from 'typeorm'
@@ -51,8 +50,8 @@ export class VoteModel {
   })
   postImageId: string
 
-  @OneToOne(() => PostImageModel, (image) => image.vote, {
-    cascade: true,
+  @ManyToOne(() => PostImageModel, (image) => image.vote, {
+    onDelete: 'CASCADE'
   })
   @JoinColumn({ name: 'post_image_id' })
   postImage: PostImageModel
