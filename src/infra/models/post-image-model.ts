@@ -6,7 +6,7 @@ import {
   ManyToOne,
   Column,
   JoinColumn,
-  OneToOne,
+  OneToMany
 } from 'typeorm'
 import { PostModel } from './post-model'
 import { VoteModel } from './vote-model'
@@ -30,8 +30,8 @@ export class PostImageModel {
   @JoinColumn({ name: 'post_id' })
   post: PostModel
 
-  @OneToOne(() => VoteModel, (vote) => vote.postImage, {
-    onDelete: 'CASCADE'
+  @OneToMany(() => VoteModel, (vote) => vote.postImage, {
+    cascade: true
   })
   vote: VoteModel
 
