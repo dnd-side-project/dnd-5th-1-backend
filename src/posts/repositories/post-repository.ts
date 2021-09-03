@@ -22,7 +22,7 @@ export class PostRepository implements IPostRepository {
 
   public async listPosts(page: number, limit: number) {
     try {
-    const list = await this.ormRepository
+    const posts = await this.ormRepository
     .createQueryBuilder('p')
     .innerJoin('p.user', 'u')
     .leftJoin('p.votes', 'v')
@@ -37,13 +37,20 @@ export class PostRepository implements IPostRepository {
     .take(limit)
     .getMany()
 
+    const total = await this.ormRepository
+    .createQueryBuilder('p')
+    .getCount()
+
     console.log(page)
     console.log(limit)
-    console.log(list)
-    list.forEach(post => {
+
+    posts.forEach(post => {
       post.images = [post.images[0], post.images[1]]
     })
-    return list
+    return {
+      posts,
+      total
+    }
     } catch(error) {
       console.log('###########: ' + error.code)
     }

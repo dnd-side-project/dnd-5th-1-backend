@@ -21,11 +21,10 @@ export class ListPosts {
       page = page * limit
       
       if (page < 0) page = 0
-      console.log(page, limit)
 
-      const list = await this.postRepository.listPosts(page, limit)
+      const result = await this.postRepository.listPosts(page, limit)
 
-      const outputDto: ListPostsOutputDto = list
+      const outputDto: ListPostsOutputDto = result
       return outputDto
     } catch (error) {
       console.log(error)
