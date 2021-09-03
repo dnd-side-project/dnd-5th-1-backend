@@ -8,8 +8,6 @@ import * as iam from '@aws-cdk/aws-iam'
 import * as codebuild from '@aws-cdk/aws-codebuild'
 import * as codepipeline from '@aws-cdk/aws-codepipeline'
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions'
-import * as ssm from '@aws-cdk/aws-ssm'
-
 import { AppCredentials, S3Credentials } from './credentials-stack'
 import { DbCredentials } from './rds-stack'
 
@@ -27,21 +25,21 @@ export class InfrastructuresStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: BackendStackProps) {
     super(scope, id, props)
 
-    const clusterAdmin = new iam.Role(this, 'PickmeAdminRole', {
+    const clusterAdmin = new iam.Role(this, 'picme-admin-role', {
       assumedBy: new iam.AccountRootPrincipal(),
     })
 
-    const cluster = new ecs.Cluster(this, 'pickme-ecs-cluster', {
+    const cluster = new ecs.Cluster(this, 'picme-ecs-cluster', {
       vpc: props.vpc,
     })
 
     const logging = new ecs.AwsLogDriver({
-      streamPrefix: 'pickme-ecs-logs',
+      streamPrefix: 'picme-ecs-logs',
     })
 
     const taskRole = new iam.Role(
       this,
-      `pickme-ecs-taskRole-${this.stackName}`,
+      `picme-ecs-taskRole-${this.stackName}`,
       {
         roleName: `ecs-taskRole-${this.stackName}`,
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
@@ -51,8 +49,8 @@ export class InfrastructuresStack extends cdk.Stack {
     // ECR - repo
     const ecrRepo = ecr.Repository.fromRepositoryName(
       this,
-      'pickme-backend-ecr-repo',
-      'pickme-backend-ecr-repo'
+      'picme-backend-ecr-repo',
+      'picme-backend-ecr-repo'
     )
 
     // ***ECS Contructs***
@@ -69,39 +67,21 @@ export class InfrastructuresStack extends cdk.Stack {
       ],
     })
 
-    const taskDef = new ecs.FargateTaskDefinition(this, 'pickme-ecs-taskdef', {
+    const taskDef = new ecs.FargateTaskDefinition(this, 'picme-ecs-taskdef', {
       taskRole: taskRole,
     })
 
     taskDef.addToExecutionRolePolicy(executionRolePolicy)
 
-    const container = taskDef.addContainer('pickme-app', {
+    const container = taskDef.addContainer('picme-app', {
       // tag: latest
       image: ecs.ContainerImage.fromEcrRepository(ecrRepo),
       secrets: {
-        JWT_SECRET: ecs.Secret.fromSsmParameter(
-          props.appCredentials.JWT_SECRET
-        ),
-        ACCESS_KEY_ID: ecs.Secret.fromSsmParameter(
-          props.s3Credentials.ACCESS_KEY_ID
-        ),
-        SECRET_ACCESS_KEY: ecs.Secret.fromSsmParameter(
-          props.s3Credentials.SECRET_ACCESS_KEY
-        ),
-        DB_USER: ecs.Secret.fromSsmParameter(
-          ssm.StringParameter.fromSecureStringParameterAttributes(
-            this,
-            '/pickme/mysql/db_username',
-            { parameterName: '/pickme/mysql/db_username', version: 1 }
-          )
-        ),
-        DB_PASS: ecs.Secret.fromSsmParameter(
-          ssm.StringParameter.fromSecureStringParameterAttributes(
-            this,
-            '/pickme/mysql/db_password',
-            { parameterName: '/pickme/mysql/db_password', version: 1 }
-          )
-        ),
+        JWT_SECRET: props.appCredentials.JWT_SECRET,
+        ACCESS_KEY_ID: props.s3Credentials.ACCESS_KEY_ID,
+        SECRET_ACCESS_KEY: props.s3Credentials.SECRET_ACCESS_KEY,
+        DB_USER: props.dbCredentials.DB_USER,
+        DB_PASS: props.dbCredentials.DB_PASS,
       },
       environment: {
         NODE_ENV: 'production',
@@ -122,7 +102,7 @@ export class InfrastructuresStack extends cdk.Stack {
     const fargateService =
       new ecs_patterns.ApplicationLoadBalancedFargateService(
         this,
-        'pickme-ecs-service',
+        'picme-ecs-service',
         {
           cluster: cluster,
           taskDefinition: taskDef,
@@ -135,17 +115,6 @@ export class InfrastructuresStack extends cdk.Stack {
     const scaling = fargateService.service.autoScaleTaskCount({
       maxCapacity: 2,
     })
-
-    // props.dbInstance.connections.allowFrom(
-    //   fargateService.service,
-    //   ec2.Port.tcp(+props.dbInstance.dbInstanceEndpointPort)
-    // )
-
-    // scaling.scaleOnCpuUtilization('CpuScaling', {
-    //   targetUtilizationPercent: 10,
-    //   scaleInCooldown: cdk.Duration.seconds(60),
-    //   scaleOutCooldown: cdk.Duration.seconds(60),
-    // })
 
     // ***PIPELINE CONSTRUCTS***
 
@@ -161,7 +130,7 @@ export class InfrastructuresStack extends cdk.Stack {
     })
 
     // CODEBUILD - project
-    const project = new codebuild.Project(this, 'PickmeCodeBuildProject', {
+    const project = new codebuild.Project(this, 'picme-codebuild-project', {
       projectName: `${this.stackName}`,
       source: gitHubSource,
       environment: {
@@ -196,7 +165,7 @@ export class InfrastructuresStack extends cdk.Stack {
           post_build: {
             commands: [
               'echo "In Post-Build Stage"',
-              'printf \'[{"name":"pickme-app","imageUri":"%s"}]\' $ECR_REPO_URI:$TAG > imagedefinitions.json',
+              'printf \'[{"name":"picme-app","imageUri":"%s"}]\' $ECR_REPO_URI:$TAG > imagedefinitions.json',
               'pwd; ls -al; cat imagedefinitions.json',
               'echo Build completed on `date`',
             ],
@@ -243,7 +212,7 @@ export class InfrastructuresStack extends cdk.Stack {
     })
 
     // PIPELINE STAGES
-    new codepipeline.Pipeline(this, 'PickmeECSPipeline', {
+    new codepipeline.Pipeline(this, 'picme-ecs-pipeline', {
       stages: [
         {
           stageName: 'Source',

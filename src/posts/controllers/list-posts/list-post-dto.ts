@@ -10,5 +10,6 @@ export interface IPostItem {
 }
 
 export interface ListPostsOutputDto {
-  posts: IPostItem[]
+  posts: IPostItem[],
+  total: number
 }

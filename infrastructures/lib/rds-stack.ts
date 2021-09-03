@@ -2,13 +2,14 @@ import * as ec2 from '@aws-cdk/aws-ec2'
 import * as cdk from '@aws-cdk/core'
 import * as rds from '@aws-cdk/aws-rds'
 import { Secret } from '@aws-cdk/aws-secretsmanager'
+import * as ecs from '@aws-cdk/aws-ecs'
 
 export interface DbCredentials {
   DB_HOST: string
   DB_PORT: string
   DB_NAME: string
-  DB_USER: cdk.SecretValue
-  DB_PASS: cdk.SecretValue
+  DB_USER: ecs.Secret
+  DB_PASS: ecs.Secret
 }
 
 export interface RdsStackProps extends cdk.StackProps {
@@ -64,8 +65,8 @@ export class RdsStack extends cdk.Stack {
       DB_HOST: this.dbInstance.dbInstanceEndpointAddress,
       DB_PORT: this.dbInstance.dbInstanceEndpointPort,
       DB_NAME: 'pickme_db',
-      DB_USER: dbSecrets.secretValueFromJson('username'),
-      DB_PASS: dbSecrets.secretValueFromJson('password'),
+      DB_USER: ecs.Secret.fromSecretsManager(dbSecrets, 'username'),
+      DB_PASS: ecs.Secret.fromSecretsManager(dbSecrets, 'password'),
     }
 
     this.dbInstance.connections.allowDefaultPortInternally()

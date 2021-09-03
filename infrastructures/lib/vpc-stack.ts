@@ -9,22 +9,22 @@ export class VpcStack extends cdk.Stack {
     /**
      * Create a new VPC with single NAT Gateway
      */
-    this.vpc = new ec2.Vpc(this, 'pickme-ecs-cdk-vpc', {
+    this.vpc = new ec2.Vpc(this, 'picme-ecs-cdk-vpc', {
       cidr: '10.0.0.0/16',
       maxAzs: 2,
       subnetConfiguration: [
         {
-          name: 'pickme-public-subnet-1',
+          name: 'picme-public-subnet-1',
           subnetType: ec2.SubnetType.PUBLIC,
           cidrMask: 20,
         },
         {
-          name: 'pickme-isolated-subnet-1',
+          name: 'picme-isolated-subnet-1',
           subnetType: ec2.SubnetType.ISOLATED,
           cidrMask: 24,
         },
         {
-          name: 'pickme-private-subnet-1',
+          name: 'picme-private-subnet-1',
           subnetType: ec2.SubnetType.PRIVATE,
           cidrMask: 28,
         },
@@ -40,22 +40,30 @@ export class VpcStack extends cdk.Stack {
 
     this.vpc.addInterfaceEndpoint('vpc-endpoint-ecr-docker', {
       service: ec2.InterfaceVpcEndpointAwsService.ECR_DOCKER,
+      subnets: {
+        availabilityZones: ['ap-northeast-2a'],
+      },
     })
 
     this.vpc.addInterfaceEndpoint('vpc-endpoint-ecr', {
       service: ec2.InterfaceVpcEndpointAwsService.ECR,
-    })
-
-    this.vpc.addInterfaceEndpoint('vpc-endpoint-ssm', {
-      service: ec2.InterfaceVpcEndpointAwsService.SSM,
+      subnets: {
+        availabilityZones: ['ap-northeast-2a'],
+      },
     })
 
     this.vpc.addInterfaceEndpoint('vpc-endpoint-secrets-manager', {
       service: ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+      subnets: {
+        availabilityZones: ['ap-northeast-2a'],
+      },
     })
 
     this.vpc.addInterfaceEndpoint('vpc-endpoint-cloudwatch', {
       service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
+      subnets: {
+        availabilityZones: ['ap-northeast-2a'],
+      },
     })
   }
 }
