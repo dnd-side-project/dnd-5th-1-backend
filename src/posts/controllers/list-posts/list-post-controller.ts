@@ -26,8 +26,10 @@ export class ListPostsController extends BaseController {
         }
       } else {
         const outputDto: ListPostsOutputDto = result
+        console.log(outputDto)
         return this.ok(this.res, 200, {
-          posts: result,
+          posts: result.posts,
+          total: result.total
         })
       }
     } catch (error: any) {
