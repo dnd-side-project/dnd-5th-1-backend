@@ -8,6 +8,7 @@ interface PostImageProps {
   imageUrl: string
   thumbnailUrl: string
   isFirstPick: boolean
+  imageIndex: number
   extension: Extension
   width: number
   height: number
@@ -36,6 +37,10 @@ export class PostImage extends BaseEntity<PostImageProps> {
 
   get isFirstPick(): boolean {
     return this.props.isFirstPick
+  }
+
+  get imageIndex(): number {
+    return this.props.imageIndex
   }
 
   get extension(): Extension {
