@@ -48,6 +48,7 @@ export class CreatePostImages {
         const postId = new UniqueEntityId(inputDto.postId)
         const originalName = imageFile.originalname
         const isFirstPick = idx === inputDto.metadata.isFirstPick ? true : false
+        const imageIndex = idx
         const width = inputDto.metadata.sizes[idx].width
         const height = inputDto.metadata.sizes[idx].height
 
@@ -57,6 +58,7 @@ export class CreatePostImages {
           imageUrl,
           thumbnailUrl,
           isFirstPick,
+          imageIndex,
           extension,
           width,
           height,
