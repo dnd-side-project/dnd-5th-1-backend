@@ -49,6 +49,13 @@ export default class Server {
   public start(): void {
     this.app.listen(PORT || 3000, () => {
       console.log(`Server Listening on port ${PORT}`)
+      console.log(`
+      JWT_SECRET: ${process.env.JWT_SECRET},
+      DB_USER: ${process.env.DB_USER},
+      DB_PASS: ${process.env.DB_PASS},
+      ACCESS_KEY_ID: ${process.env.ACCESS_KEY_ID},
+      SECRET_ACCESS_KEY: ${process.env.SECRET_ACCESS_KEY}
+      `)
     })
     return
   }

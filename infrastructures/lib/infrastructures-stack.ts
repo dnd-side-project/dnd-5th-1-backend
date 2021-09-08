@@ -10,6 +10,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline'
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions'
 import { AppCredentials, S3Credentials } from './credentials-stack'
 import { DbCredentials } from './rds-stack'
+import { Secret } from '@aws-cdk/aws-secretsmanager'
 
 export interface BackendStackProps extends cdk.StackProps {
   vpc: ec2.Vpc
@@ -77,11 +78,51 @@ export class InfrastructuresStack extends cdk.Stack {
       // tag: latest
       image: ecs.ContainerImage.fromEcrRepository(ecrRepo),
       secrets: {
-        JWT_SECRET: props.appCredentials.JWT_SECRET,
-        ACCESS_KEY_ID: props.s3Credentials.ACCESS_KEY_ID,
-        SECRET_ACCESS_KEY: props.s3Credentials.SECRET_ACCESS_KEY,
-        DB_USER: props.dbCredentials.DB_USER,
-        DB_PASS: props.dbCredentials.DB_PASS,
+        JWT_SECRET: ecs.Secret.fromSecretsManager(
+          Secret.fromSecretPartialArn(
+            this,
+            '/picme/app/jwt_secret',
+            'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:/pickme/app'
+          ),
+          'jwt_secret'
+        ),
+        ACCESS_KEY_ID: ecs.Secret.fromSecretsManager(
+          Secret.fromSecretPartialArn(
+            this,
+            '/picme/s3/access_key_id',
+            'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:/pickme/s3'
+          ),
+          'access_key_id'
+        ),
+        SECRET_ACCESS_KEY: ecs.Secret.fromSecretsManager(
+          Secret.fromSecretPartialArn(
+            this,
+            '/picme/s3/secret_access_key',
+            'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:/pickme/s3'
+          ),
+          'secret_access_key'
+        ),
+        DB_USER: ecs.Secret.fromSecretsManager(
+          Secret.fromSecretPartialArn(
+            this,
+            'db-secrets/username',
+            'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:db-credentials'
+          ),
+          'username'
+        ),
+        DB_PASS: ecs.Secret.fromSecretsManager(
+          Secret.fromSecretPartialArn(
+            this,
+            'db-secrets/password',
+            'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:db-credentials'
+          ),
+          'password'
+        ),
+        // JWT_SECRET: props.appCredentials.JWT_SECRET,
+        // ACCESS_KEY_ID: props.s3Credentials.ACCESS_KEY_ID,
+        // SECRET_ACCESS_KEY: props.s3Credentials.SECRET_ACCESS_KEY,
+        // DB_USER: props.dbCredentials.DB_USER,
+        // DB_PASS: props.dbCredentials.DB_PASS,
       },
       environment: {
         NODE_ENV: 'production',

@@ -1,8 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2'
 import * as cdk from '@aws-cdk/core'
 import * as rds from '@aws-cdk/aws-rds'
-import { Secret } from '@aws-cdk/aws-secretsmanager'
 import * as ecs from '@aws-cdk/aws-ecs'
+import { Secret } from '@aws-cdk/aws-secretsmanager'
 
 export interface DbCredentials {
   DB_HOST: string
@@ -23,6 +23,12 @@ export class RdsStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: RdsStackProps) {
     super(scope, id, props)
 
+    const dbSecrets = Secret.fromSecretCompleteArn(
+      this,
+      'db-secrets',
+      'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:db-credentials-WDSwf4'
+    )
+
     this.dbInstance = new rds.DatabaseInstance(this, 'db-instance', {
       vpc: props.vpc,
       vpcSubnets: {
@@ -35,13 +41,7 @@ export class RdsStack extends cdk.Stack {
         ec2.InstanceClass.T2,
         ec2.InstanceSize.MICRO
       ),
-      credentials: rds.Credentials.fromSecret(
-        Secret.fromSecretPartialArn(
-          this,
-          'db-credentials',
-          'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:db-credentials-WDSwf4'
-        )
-      ),
+      credentials: rds.Credentials.fromSecret(dbSecrets),
       multiAz: false,
       allocatedStorage: 20,
       maxAllocatedStorage: 1000,
@@ -51,22 +51,30 @@ export class RdsStack extends cdk.Stack {
       deleteAutomatedBackups: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       deletionProtection: false,
-      databaseName: 'pickme_db',
+      databaseName: 'picme_db',
       publiclyAccessible: false,
     })
-
-    const dbSecrets = Secret.fromSecretPartialArn(
-      this,
-      'db-secrets',
-      'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:db-credentials-WDSwf4'
-    )
 
     this.dbCredentials = {
       DB_HOST: this.dbInstance.dbInstanceEndpointAddress,
       DB_PORT: this.dbInstance.dbInstanceEndpointPort,
-      DB_NAME: 'pickme_db',
-      DB_USER: ecs.Secret.fromSecretsManager(dbSecrets, 'username'),
-      DB_PASS: ecs.Secret.fromSecretsManager(dbSecrets, 'password'),
+      DB_NAME: 'picme_db',
+      DB_USER: ecs.Secret.fromSecretsManager(
+        Secret.fromSecretPartialArn(
+          this,
+          'db-secrets/username',
+          'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:db-credentials'
+        ),
+        'username'
+      ),
+      DB_PASS: ecs.Secret.fromSecretsManager(
+        Secret.fromSecretPartialArn(
+          this,
+          'db-secrets/password',
+          'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:db-credentials'
+        ),
+        'password'
+      ),
     }
 
     this.dbInstance.connections.allowDefaultPortInternally()
