@@ -6,7 +6,7 @@ import {
   ManyToOne,
   Column,
   JoinColumn,
-  OneToMany
+  OneToMany,
 } from 'typeorm'
 import { PostModel } from './post-model'
 import { VoteModel } from './vote-model'
@@ -25,13 +25,13 @@ export class PostImageModel {
   postId: string
 
   @ManyToOne(() => PostModel, (post) => post.images, {
-    onDelete: 'CASCADE'
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'post_id' })
   post: PostModel
 
   @OneToMany(() => VoteModel, (vote) => vote.postImage, {
-    cascade: true
+    cascade: true,
   })
   vote: VoteModel
 
@@ -84,6 +84,13 @@ export class PostImageModel {
   })
   isFirstPick: boolean
 
+  @Column('int', {
+    name: 'image_index',
+    comment: 'index of image in the post',
+    default: false,
+  })
+  imageIndex: number
+
   @Column('varchar', {
     name: 'extension',
     nullable: false,
@@ -95,14 +102,14 @@ export class PostImageModel {
   @Column('int', {
     name: 'width',
     comment: 'file width',
-    default: null
+    default: null,
   })
   width: number
 
   @Column('int', {
     name: 'height',
     comment: 'file height',
-    default: null
+    default: null,
   })
   height: number
 
