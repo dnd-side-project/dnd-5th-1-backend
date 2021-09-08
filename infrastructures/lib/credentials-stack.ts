@@ -27,8 +27,8 @@ export class CredentialsStack extends cdk.Stack {
     // import App Credentials
     const appPort = Secret.fromSecretPartialArn(
       this,
-      '/pickme/app',
-      'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:/pickme/app-5FDYDf'
+      '/picme/app/port',
+      'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:/pickme/app'
     )
       .secretValueFromJson('port')
       .toString()
@@ -36,8 +36,9 @@ export class CredentialsStack extends cdk.Stack {
     const appJwtSecret = ecs.Secret.fromSecretsManager(
       Secret.fromSecretPartialArn(
         this,
-        '/pickme/app',
-        'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:/pickme/app-5FDYDf'
+        '/picme/app/jwt_secret',
+        'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:/pickme/app'
+        // 'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:/pickme/app:jwt_secret::'
       ),
       'jwt_secret'
     )
@@ -50,8 +51,8 @@ export class CredentialsStack extends cdk.Stack {
     // import S3 Credentials
     const s3BucketName = Secret.fromSecretPartialArn(
       this,
-      '/pickme/s3',
-      'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:/pickme/s3-SIuNEM'
+      '/picme/s3/bucket_name',
+      'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:/pickme/s3'
     )
       .secretValueFromJson('bucket_name')
       .toString()
@@ -59,8 +60,9 @@ export class CredentialsStack extends cdk.Stack {
     const s3AccessKeyId = ecs.Secret.fromSecretsManager(
       Secret.fromSecretPartialArn(
         this,
-        '/pickme/s3',
-        'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:/pickme/s3-SIuNEM'
+        '/picme/s3/access_key_id',
+        'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:/pickme/s3'
+        // 'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:/pickme/s3:access_key_id::'
       ),
       'access_key_id'
     )
@@ -68,8 +70,9 @@ export class CredentialsStack extends cdk.Stack {
     const s3SecretAccessKey = ecs.Secret.fromSecretsManager(
       Secret.fromSecretPartialArn(
         this,
-        '/pickme/s3',
-        'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:/pickme/s3-SIuNEM'
+        '/picme/s3/secret_access_key',
+        'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:/pickme/s3'
+        // 'arn:aws:secretsmanager:ap-northeast-2:369590600858:secret:/pickme/s3:secret_access_key::'
       ),
       'secret_access_key'
     )
@@ -84,5 +87,20 @@ export class CredentialsStack extends cdk.Stack {
       appCredentials: appCredentials,
       s3Credentials: s3Credentials,
     }
+
+    new cdk.CfnOutput(this, 'appJwtSecret', {
+      value: appJwtSecret.arn,
+      exportName: 'appJwtSecret',
+    })
+
+    new cdk.CfnOutput(this, 's3AccessKeyId', {
+      value: s3AccessKeyId.arn,
+      exportName: 's3AccessKeyId',
+    })
+
+    new cdk.CfnOutput(this, 's3SecretAccessKey', {
+      value: s3SecretAccessKey.arn,
+      exportName: 's3SecretAccessKey',
+    })
   }
 }
