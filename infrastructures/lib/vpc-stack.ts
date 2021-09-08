@@ -40,30 +40,30 @@ export class VpcStack extends cdk.Stack {
 
     this.vpc.addInterfaceEndpoint('vpc-endpoint-ecr-docker', {
       service: ec2.InterfaceVpcEndpointAwsService.ECR_DOCKER,
-      subnets: {
-        availabilityZones: ['ap-northeast-2a'],
-      },
+      // subnets: {
+      //   availabilityZones: ['ap-northeast-2a'],
+      // },
     })
 
     this.vpc.addInterfaceEndpoint('vpc-endpoint-ecr', {
       service: ec2.InterfaceVpcEndpointAwsService.ECR,
-      subnets: {
-        availabilityZones: ['ap-northeast-2a'],
-      },
+      // subnets: {
+      //   availabilityZones: ['ap-northeast-2a'],
+      // },
     })
 
     this.vpc.addInterfaceEndpoint('vpc-endpoint-secrets-manager', {
       service: ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
-      subnets: {
-        availabilityZones: ['ap-northeast-2a'],
-      },
+      // subnets: {
+      //   availabilityZones: ['ap-northeast-2a'],
+      // },
     })
 
     this.vpc.addInterfaceEndpoint('vpc-endpoint-cloudwatch', {
       service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
-      subnets: {
-        availabilityZones: ['ap-northeast-2a'],
-      },
+      // subnets: {
+      //   availabilityZones: ['ap-northeast-2a'],
+      // },
     })
   }
 }
