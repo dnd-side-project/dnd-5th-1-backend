@@ -1,7 +1,7 @@
 import { EntityRepository, getRepository, Repository } from 'typeorm'
 import { UserModel } from 'infra/models/user-model'
 import { IUserRepository } from 'users/repositories/user-repository.interface'
-import { User } from 'users/domain/user'
+import { User, IDeleteUser } from 'users/domain/user'
 import { UserMapper } from 'users/mappers/user-mapper'
 import { Vendor } from 'users/domain/vendor'
 import { UniqueEntityId } from '../../core/infra/unique-entity-id'
@@ -111,6 +111,26 @@ export class UserRepository implements IUserRepository {
     try {
       if (exists) {
         this.ormRepository.remove(UserMapper.toPersistence(exists))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  public async deleteUser(user: IDeleteUser): Promise<boolean> {
+    const exists = await this.ormRepository.findOne({
+      where: {
+        vendor: user.vendor,
+        vendorAccountId: user.vendorAccountId
+      }
+    })
+
+    try {
+      if (exists) {
+        this.ormRepository.remove(exists)
+        return true
+      } else {
+        return false
       }
     } catch (error) {
       console.log(error)

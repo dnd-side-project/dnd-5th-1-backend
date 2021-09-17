@@ -12,6 +12,11 @@ interface UserProps {
   vendorAccountId: string
 }
 
+export interface IDeleteUser {
+  vendor: string
+  vendorAccountId: string
+}
+
 export class User extends BaseEntity<UserProps> {
   get id(): UniqueEntityId {
     return this._id
