@@ -13,6 +13,7 @@ import {
   RetrievePostQueryObject,
 } from 'posts/controllers/retrieve-post/retrieve-post-dto'
 import express from 'express'
+import { NotFound } from 'posts/use-cases/retrieve-post/retrieve-post-error'
 
 @singleton()
 @EntityRepository(PostModel)
@@ -98,119 +99,125 @@ export class PostRepository implements IPostRepository {
   }
 
   public async retrieve(req: express.Request, postId: string): Promise<any> {
-    const voteRepository = getRepository(VoteModel)
-    // first, getRawMany where p.id = :postId -> will return several imageUrl separated into several object parts.
-    const query = await this.ormRepository
-      .createQueryBuilder('p')
-      .leftJoin('p.images', 'pi')
-      .leftJoin('p.votes', 'v')
-      .leftJoin('p.user', 'u')
-      .where('p.id = :postId', { postId })
-      .select([
-        'pi.id AS id',
-        'pi.imageUrl AS imageUrl',
-        'p.id AS postId',
-        'pi.isFirstPick AS isFirstPick',
-        'p.expiredAt AS expiredAt',
-        'p.title AS title',
-        'p.userId AS userId',
-        'u.nickname AS nickname',
-        'u.imageUrl AS userImageProfile',
-      ])
-      .loadRelationCountAndMap('p.participantsNum', 'p.votes')
-      .orderBy('pi.imageIndex')
-      .getRawMany()
+    try {
+      const voteRepository = getRepository(VoteModel)
+      // first, getRawMany where p.id = :postId -> will return several imageUrl separated into several object parts.
+      const query = await this.ormRepository
+        .createQueryBuilder('p')
+        .leftJoin('p.images', 'pi')
+        .leftJoin('p.votes', 'v')
+        .leftJoin('p.user', 'u')
+        .where('p.id = :postId', { postId })
+        .select([
+          'pi.id AS id',
+          'pi.imageUrl AS imageUrl',
+          'p.id AS postId',
+          'pi.isFirstPick AS isFirstPick',
+          'p.expiredAt AS expiredAt',
+          'p.title AS title',
+          'p.userId AS userId',
+          'u.nickname AS nickname',
+          'u.imageUrl AS userImageProfile',
+        ])
+        .loadRelationCountAndMap('p.participantsNum', 'p.votes')
+        .orderBy('pi.imageIndex')
+        .getRawMany()
 
-    console.log(query)
-
-    let votesResult: [VoteModel[], number]
-    const images = []
-    let firstPickIndex = 0
-    let isVoted = false
-    let participantsNum = 0
-    let votedImageIndex = null
-    let title = ''
-    let expiredAt = ''
-    let nickname = ''
-    let userProfileUrl = ''
-    let index = 0
-    // second, according to the way above,
-    // I should map image information to the raw query result.
-
-    // await Promise.all(
-    // query.forEach(async (image, i) => {
-    for (const image of query) {
-      // assign each image information related with the post
-      const imageInfoObject = {} as RetrievePostQueryObject
-      const imageId = image.id
-      votesResult = await voteRepository
-        .createQueryBuilder('v')
-        .where('v.postImageId = :imageId', { imageId })
-        .getManyAndCount()
-
-      if (index === 0) {
-        nickname = image.nickname
-        userProfileUrl = image.userImageProfile
+      if (query.length === 0) {
+        return new NotFound()
       }
-      if (image.postId === postId) {
-        title = image.title
-        expiredAt = image.expiredAt
+
+      let votesResult: [VoteModel[], number]
+      const images = []
+      let firstPickIndex = 0
+      let isVoted = false
+      let participantsNum = 0
+      let votedImageIndex = null
+      let title = ''
+      let expiredAt = ''
+      let nickname = ''
+      let userProfileUrl = ''
+      let index = 0
+      // second, according to the way above,
+      // I should map image information to the raw query result.
+
+      // await Promise.all(
+      // query.forEach(async (image, i) => {
+      for (const image of query) {
+        // assign each image information related with the post
+        const imageInfoObject = {} as RetrievePostQueryObject
+        const imageId = image.id
+        votesResult = await voteRepository
+          .createQueryBuilder('v')
+          .where('v.postImageId = :imageId', { imageId })
+          .getManyAndCount()
+
+        if (index === 0) {
+          nickname = image.nickname
+          userProfileUrl = image.userImageProfile
+        }
+        if (image.postId === postId) {
+          title = image.title
+          expiredAt = image.expiredAt
+        }
+        imageInfoObject.id = image.id
+        if (image.isFirstPick === 1) {
+          imageInfoObject.isFirstPick = 1
+        }
+        votesResult[0].forEach((voteResult) => {
+          if (voteResult.userId === req.user) {
+            isVoted = true
+            votedImageIndex = index
+          }
+        })
+        // console.log(votesResult)
+        // if (image.userId = req.user) {
+        //   votedImageIndex = index
+        //  }
+        participantsNum += votesResult[1]
+        imageInfoObject.pickedNum = votesResult[1]
+        imageInfoObject.imageUrl = image.imageUrl
+        imageInfoObject.emotion = votesResult[0].filter(
+          (vote) => vote.category === 'emotion'
+        ).length
+        imageInfoObject.color = votesResult[0].filter(
+          (vote) => vote.category === 'color'
+        ).length
+        imageInfoObject.composition = votesResult[0].filter(
+          (vote) => vote.category === 'composition'
+        ).length
+        imageInfoObject.light = votesResult[0].filter(
+          (vote) => vote.category === 'light'
+        ).length
+        imageInfoObject.skip = votesResult[0].filter(
+          (vote) => vote.category === 'skip'
+        ).length
+        images.push(imageInfoObject)
+        index++
       }
-      imageInfoObject.id = image.id
-      if (image.isFirstPick === 1) {
-        imageInfoObject.isFirstPick = 1
-      }
-      votesResult[0].forEach((voteResult) => {
-        if (voteResult.userId === req.user) {
-          isVoted = true
-          votedImageIndex = index
+
+      images.forEach((image, i) => {
+        if (image.isFirstPick === 1) {
+          firstPickIndex = i
         }
       })
-      // console.log(votesResult)
-      // if (image.userId = req.user) {
-      //   votedImageIndex = index
-      //  }
-      participantsNum += votesResult[1]
-      imageInfoObject.pickedNum = votesResult[1]
-      imageInfoObject.imageUrl = image.imageUrl
-      imageInfoObject.emotion = votesResult[0].filter(
-        (vote) => vote.category === 'emotion'
-      ).length
-      imageInfoObject.color = votesResult[0].filter(
-        (vote) => vote.category === 'color'
-      ).length
-      imageInfoObject.composition = votesResult[0].filter(
-        (vote) => vote.category === 'composition'
-      ).length
-      imageInfoObject.light = votesResult[0].filter(
-        (vote) => vote.category === 'light'
-      ).length
-      imageInfoObject.skip = votesResult[0].filter(
-        (vote) => vote.category === 'skip'
-      ).length
-      images.push(imageInfoObject)
-      index++
-    }
 
-    images.forEach((image, i) => {
-      if (image.isFirstPick === 1) {
-        firstPickIndex = i
+      const result = {
+        nickname,
+        userProfileUrl,
+        firstPickIndex,
+        isVoted,
+        participantsNum,
+        votedImageIndex,
+        expiredAt,
+        title,
+        images,
       }
-    })
 
-    const result = {
-      nickname,
-      userProfileUrl,
-      firstPickIndex,
-      isVoted,
-      participantsNum,
-      votedImageIndex,
-      expiredAt,
-      title,
-      images,
+      return result
+    } catch (error) {
+      throw error
     }
-
-    return result
   }
 
   public async exists(postId: string): Promise<boolean> {

@@ -19,20 +19,20 @@ export class RetrievePostController extends BaseController {
     const dto: RetirevePostInputDto = {
       postId,
     }
-    
+
     try {
       const result = await this.useCase.execute(this.req, dto)
 
       if (result instanceof UseCaseError) {
         switch (result.constructor) {
           case RetirevePostErrors.NotFound:
-          // return this.someProperResponseFunction in base controller
+            return this.notFound(result.message)
         }
       } else {
         const outputDto: RetirevePostOutputDto = result
         return this.ok(this.res, 200, outputDto)
       }
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof Error) {
         return this.fail(error)
       }
