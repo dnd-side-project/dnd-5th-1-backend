@@ -1,6 +1,6 @@
 import { Repository } from 'core/infra/repository.interface.'
 import { UniqueEntityId } from 'core/infra/unique-entity-id'
-import { User } from 'users/domain/user'
+import { IDeleteUser, User } from 'users/domain/user'
 import { Vendor } from 'users/domain/vendor'
 
 export interface IUserRepository extends Repository<User> {
@@ -11,4 +11,5 @@ export interface IUserRepository extends Repository<User> {
   ): Promise<User | null>
   createAndSave(user: User): Promise<User | null>
   getUserProfile(user: User)
+  deleteUser(user: IDeleteUser)
 }

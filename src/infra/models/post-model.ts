@@ -25,7 +25,9 @@ export class PostModel {
   })
   userId: string
 
-  @ManyToOne(() => UserModel, (user) => user.posts)
+  @ManyToOne(() => UserModel, (user) => user.posts, {
+    onDelete: 'CASCADE'
+  })
   @JoinColumn({ name: 'user_id' })
   user: UserModel
 
