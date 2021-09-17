@@ -24,7 +24,9 @@ export class VoteModel {
   })
   userId: string
 
-  @ManyToOne(() => UserModel, (user) => user.votes)
+  @ManyToOne(() => UserModel, (user) => user.votes, {
+    onDelete: 'CASCADE'
+  })
   @JoinColumn({ name: 'user_id' })
   user: UserModel
 
