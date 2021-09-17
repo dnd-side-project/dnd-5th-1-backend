@@ -118,6 +118,7 @@ export class PostRepository implements IPostRepository {
         'u.imageUrl AS userImageProfile',
       ])
       .loadRelationCountAndMap('p.participantsNum', 'p.votes')
+      .orderBy('pi.imageIndex')
       .getRawMany()
 
     console.log(query)
