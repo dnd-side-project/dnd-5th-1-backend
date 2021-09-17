@@ -15,11 +15,14 @@ export class RetrievePost {
     @inject('IPostRepository') private postRepository: IPostRepository
   ) {}
 
-  public async execute(req: express.Request, inputDto: RetirevePostInputDto): Promise<Response> {
+  public async execute(
+    req: express.Request,
+    inputDto: RetirevePostInputDto
+  ): Promise<Response> {
     try {
       const { postId } = inputDto
-      const list = await this.postRepository.retrieve(req, postId)
-      const outputDto: RetirevePostOutputDto = list
+      const result = await this.postRepository.retrieve(req, postId)
+      const outputDto: RetirevePostOutputDto = result
       return outputDto
     } catch (error) {
       throw error
