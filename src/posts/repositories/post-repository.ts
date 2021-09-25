@@ -105,7 +105,6 @@ export class PostRepository implements IPostRepository {
       const query = await this.ormRepository
         .createQueryBuilder('p')
         .leftJoin('p.images', 'pi')
-        .leftJoin('p.votes', 'v')
         .leftJoin('p.user', 'u')
         .where('p.id = :postId', { postId })
         .select([
@@ -151,6 +150,8 @@ export class PostRepository implements IPostRepository {
           .where('v.postImageId = :imageId', { imageId })
           .getManyAndCount()
 
+        // console.log('votesResult', votesResult)
+
         if (index === 0) {
           nickname = image.nickname
           userProfileUrl = image.userImageProfile
@@ -173,7 +174,8 @@ export class PostRepository implements IPostRepository {
         // if (image.userId = req.user) {
         //   votedImageIndex = index
         //  }
-        participantsNum = votesResult[1]
+        participantsNum += votesResult[1]
+
         imageInfoObject.pickedNum = votesResult[1]
         imageInfoObject.imageUrl = image.imageUrl
         imageInfoObject.emotion = votesResult[0].filter(

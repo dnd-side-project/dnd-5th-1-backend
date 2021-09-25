@@ -17,13 +17,13 @@ export class UserModel {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @OneToMany(() => PostModel, (post)=> post.user, {
-    cascade: true
+  @OneToMany(() => PostModel, (post) => post.user, {
+    cascade: true,
   })
   posts: PostModel[]
 
-  @OneToMany(() => VoteModel, (vote)=> vote.user, {
-    cascade: true
+  @OneToMany(() => VoteModel, (vote) => vote.user, {
+    cascade: true,
   })
   votes: VoteModel[]
 
@@ -45,10 +45,9 @@ export class UserModel {
 
   @Column('varchar', {
     name: 'image_url',
-    nullable: true,
-    comment: 'user profile image',
+    comment: 'user profile image (1,2,3)',
     length: 200,
-    default: () => Math.floor(Math.random() * 3 + 1).toString()
+    default: 3,
   })
   imageUrl: string
 
