@@ -27,7 +27,9 @@ export class SocialSignup {
     try {
       const nickname = new Nickname(inputDto.nickname)
       const email = inputDto.email ? inputDto.email : ''
-      const imageUrl = new ImageUrl()
+      const imageUrl = new ImageUrl(
+        Math.floor(Math.random() * 3 + 1).toString()
+      )
       console.log(`imageUrl: ${imageUrl.value}`)
       if (!Vendor.isVendor(inputDto.vendor)) {
         return new SocialSignupError.InvalidVendor()

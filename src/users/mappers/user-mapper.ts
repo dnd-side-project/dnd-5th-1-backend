@@ -10,7 +10,7 @@ export class UserMapper {
     return {
       nickname: user.nickname.value,
       email: user.email,
-      // imageUrl: user.imageUrl.value,
+      imageUrl: user.imageUrl.value,
       vendor: user.vendor.value,
       vendorAccountId: user.vendorAccountId,
     }
