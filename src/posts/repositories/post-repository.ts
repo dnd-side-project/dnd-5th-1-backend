@@ -119,7 +119,6 @@ export class PostRepository implements IPostRepository {
           'u.nickname AS nickname',
           'u.imageUrl AS userImageProfile',
         ])
-        .loadRelationCountAndMap('p.participantsNum', 'p.votes')
         .orderBy('pi.imageIndex')
         .getRawMany()
 
@@ -174,7 +173,7 @@ export class PostRepository implements IPostRepository {
         // if (image.userId = req.user) {
         //   votedImageIndex = index
         //  }
-        participantsNum += votesResult[1]
+        participantsNum = votesResult[1]
         imageInfoObject.pickedNum = votesResult[1]
         imageInfoObject.imageUrl = image.imageUrl
         imageInfoObject.emotion = votesResult[0].filter(
