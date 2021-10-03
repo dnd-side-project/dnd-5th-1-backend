@@ -182,8 +182,6 @@ export class PostRepository implements IPostRepository {
       let nickname = ''
       let userProfileUrl = ''
       let index = 0
-      // second, according to the way above,
-      // I should map image information to the raw query result.
 
       // await Promise.all(
       // query.forEach(async (image, i) => {
