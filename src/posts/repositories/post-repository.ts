@@ -36,6 +36,7 @@ export class PostRepository implements IPostRepository {
         .addSelect('u.nickname')
         .addSelect('u.imageUrl')
         .loadRelationCountAndMap('p.participantsNum', 'p.votes')
+        .loadRelationCountAndMap('pi.votedCount', 'pi.vote')
         .orderBy('p.createdAt', 'DESC')
         .skip(page)
         .take(limit)
@@ -46,9 +47,49 @@ export class PostRepository implements IPostRepository {
       console.log(page)
       console.log(limit)
 
-      posts.forEach((post) => {
-        post.images = [post.images[0], post.images[1]]
-      })
+      let rankIndexArr = []
+      let top = -1
+      for await (const post of posts) {
+        let i = 0
+        for await (const image of post.images) {
+          const votesCount = await getRepository(VoteModel).count({
+            where: {
+              postImageId: image.id,
+            },
+          })
+          console.log('votescount', votesCount)
+          if (votesCount > top) {
+            top = votesCount
+            rankIndexArr[0] = i
+            console.log('rankIndexArr', rankIndexArr)
+          }
+          i++
+        }
+        top = -1
+        i = 0
+
+        for await (const image of post.images) {
+          const votesCount = await getRepository(VoteModel).count({
+            where: {
+              postImageId: image.id,
+            },
+          })
+          console.log('votescount', votesCount)
+          if (votesCount > top && i !== rankIndexArr[0]) {
+            top = votesCount
+            rankIndexArr[1] = i
+            console.log('rankIndexArr', rankIndexArr)
+          }
+          i++
+        }
+
+        post.images = [
+          post.images[rankIndexArr[0]],
+          post.images[rankIndexArr[1]],
+        ]
+        rankIndexArr = []
+      }
+
       return {
         posts,
         total,
@@ -106,6 +147,7 @@ export class PostRepository implements IPostRepository {
         .createQueryBuilder('p')
         .leftJoin('p.images', 'pi')
         .leftJoin('p.user', 'u')
+        .leftJoin('pi.vote', 'v')
         .where('p.id = :postId', { postId })
         .select([
           'pi.id AS id',
@@ -118,7 +160,11 @@ export class PostRepository implements IPostRepository {
           'u.nickname AS nickname',
           'u.imageUrl AS userImageProfile',
         ])
+        // .orderBy('COUNT(v.id)', 'DESC')
+        // .addOrderBy('pi.imageIndex')
         .orderBy('pi.imageIndex')
+        .addOrderBy('COUNT(v.id)', 'DESC')
+        .groupBy('pi.id')
         .getRawMany()
 
       if (query.length === 0) {
@@ -136,8 +182,6 @@ export class PostRepository implements IPostRepository {
       let nickname = ''
       let userProfileUrl = ''
       let index = 0
-      // second, according to the way above,
-      // I should map image information to the raw query result.
 
       // await Promise.all(
       // query.forEach(async (image, i) => {

@@ -21,18 +21,18 @@ export class PostModel {
     name: 'user_id',
     comment: 'user id',
     length: 200,
-    default: null
+    default: null,
   })
   userId: string
 
   @ManyToOne(() => UserModel, (user) => user.posts, {
-    onDelete: 'CASCADE'
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'user_id' })
   user: UserModel
 
   @OneToMany(() => PostImageModel, (image) => image.post, {
-    cascade: true
+    cascade: true,
   })
   images: PostImageModel[]
 
