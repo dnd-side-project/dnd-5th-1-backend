@@ -44,8 +44,8 @@ export class PostRepository implements IPostRepository {
 
       const total = await this.ormRepository.createQueryBuilder('p').getCount()
 
-      console.log(page)
-      console.log(limit)
+      // console.log(page)
+      // console.log(limit)
 
       let rankIndexArr = []
       let top = -1
@@ -61,24 +61,25 @@ export class PostRepository implements IPostRepository {
           if (votesCount > top) {
             top = votesCount
             rankIndexArr[0] = i
-            console.log('rankIndexArr', rankIndexArr)
+            // console.log('rankIndexArr', rankIndexArr)
           }
           i++
         }
         top = -1
         i = 0
 
+        console.log('index 0:', rankIndexArr[0])
         for await (const image of post.images) {
           const votesCount = await getRepository(VoteModel).count({
             where: {
               postImageId: image.id,
             },
           })
-          console.log('votescount', votesCount)
+          // console.log('votescount', votesCount)
           if (votesCount > top && i !== rankIndexArr[0]) {
             top = votesCount
             rankIndexArr[1] = i
-            console.log('rankIndexArr', rankIndexArr)
+            // console.log('rankIndexArr', rankIndexArr)
           }
           i++
         }
@@ -87,7 +88,10 @@ export class PostRepository implements IPostRepository {
           post.images[rankIndexArr[0]],
           post.images[rankIndexArr[1]],
         ]
+
+        console.log('RANK INDEX ARR', rankIndexArr)
         rankIndexArr = []
+        top = -1
       }
 
       return {
