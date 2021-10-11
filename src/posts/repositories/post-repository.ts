@@ -166,8 +166,8 @@ export class PostRepository implements IPostRepository {
         ])
         // .orderBy('COUNT(v.id)', 'DESC')
         // .addOrderBy('pi.imageIndex')
-        .orderBy('pi.imageIndex')
-        .addOrderBy('COUNT(v.id)', 'DESC')
+        .orderBy('COUNT(v.id)', 'DESC')
+        .addOrderBy('pi.imageIndex')
         .groupBy('pi.id')
         .getRawMany()
 
