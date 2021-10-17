@@ -14,7 +14,9 @@ export class ListPostsController extends BaseController {
   async executeImpl(): Promise<any> {
     const page = Number.parseInt(this.req.query.page as string)
     const limit = Number.parseInt(this.req.query.limit as string)
-    const dto: ListPostsInputDto = { page, limit }
+    const userId = this.req.user as string
+    console.log('Controller', userId)
+    const dto: ListPostsInputDto = { userId, page, limit }
 
     try {
       const result = await this.useCase.execute(dto)
@@ -26,10 +28,9 @@ export class ListPostsController extends BaseController {
         }
       } else {
         const outputDto: ListPostsOutputDto = result
-        console.log(outputDto)
         return this.ok(this.res, 200, {
           posts: result.posts,
-          total: result.total
+          total: result.total,
         })
       }
     } catch (error: any) {
