@@ -14,6 +14,7 @@ import {
 } from 'posts/controllers/retrieve-post/retrieve-post-dto'
 import express from 'express'
 import { NotFound } from 'posts/use-cases/retrieve-post/retrieve-post-error'
+import { PostReportModel } from 'infra/models/post-report-model'
 
 @singleton()
 @EntityRepository(PostModel)
@@ -24,23 +25,32 @@ export class PostRepository implements IPostRepository {
     this.ormRepository = getRepository(PostModel)
   }
 
-  public async listPosts(page: number, limit: number) {
+  public async listPosts(userId: string, page: number, limit: number) {
     try {
       const posts = await this.ormRepository
         .createQueryBuilder('p')
         .innerJoin('p.user', 'u')
         .leftJoin('p.votes', 'v')
         .leftJoin('p.images', 'pi')
+        .leftJoin(
+          PostReportModel,
+          'pr',
+          'pr.post_id = p.id AND pr.user_id = :userId',
+          { userId }
+        )
         .addSelect('pi.id')
         .addSelect('pi.thumbnailUrl')
         .addSelect('u.nickname')
         .addSelect('u.imageUrl')
         .loadRelationCountAndMap('p.participantsNum', 'p.votes')
         .loadRelationCountAndMap('pi.votedCount', 'pi.vote')
+        .where('pr.post_id IS NULL')
         .orderBy('p.createdAt', 'DESC')
         .skip(page)
         .take(limit)
         .getMany()
+
+      console.log('USER ID', userId)
 
       const total = await this.ormRepository.createQueryBuilder('p').getCount()
 
@@ -57,7 +67,7 @@ export class PostRepository implements IPostRepository {
               postImageId: image.id,
             },
           })
-          console.log('votescount', votesCount)
+          // console.log('votescount', votesCount)
           if (votesCount > top) {
             top = votesCount
             rankIndexArr[0] = i
@@ -68,7 +78,7 @@ export class PostRepository implements IPostRepository {
         top = -1
         i = 0
 
-        console.log('index 0:', rankIndexArr[0])
+        // console.log('index 0:', rankIndexArr[0])
         for await (const image of post.images) {
           const votesCount = await getRepository(VoteModel).count({
             where: {
@@ -89,7 +99,7 @@ export class PostRepository implements IPostRepository {
           post.images[rankIndexArr[1]],
         ]
 
-        console.log('RANK INDEX ARR', rankIndexArr)
+        // console.log('RANK INDEX ARR', rankIndexArr)
         rankIndexArr = []
         top = -1
       }

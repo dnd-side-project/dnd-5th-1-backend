@@ -6,7 +6,7 @@ import { Post } from 'posts/domain/post'
 
 export interface IPostRepository {
   findPostById(postId: UniqueEntityId): Promise<Post | null>
-  listPosts(page: number, limit: number)
+  listPosts(userId: string, page: number, limit: number)
   create(post: Post): PostModel
   save(postModel: PostModel): Promise<PostModel | null>
   delete(postId: string, userId: string): Promise<any>

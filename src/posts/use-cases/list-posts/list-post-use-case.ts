@@ -16,13 +16,13 @@ export class ListPosts {
 
   public async execute(inputDto: ListPostsInputDto): Promise<Response> {
     try {
-      let { page, limit } = inputDto
+      let { userId, page, limit } = inputDto
       page = page - 1
       page = page * limit
-      
+
       if (page < 0) page = 0
 
-      const result = await this.postRepository.listPosts(page, limit)
+      const result = await this.postRepository.listPosts(userId, page, limit)
 
       const outputDto: ListPostsOutputDto = result
       return outputDto
