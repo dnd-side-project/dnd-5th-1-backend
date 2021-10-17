@@ -1,4 +1,5 @@
 export interface ListPostsInputDto {
+  userId: string
   page: number
   limit: number
 }
@@ -10,6 +11,6 @@ export interface IPostItem {
 }
 
 export interface ListPostsOutputDto {
-  posts: IPostItem[],
+  posts: IPostItem[]
   total: number
 }
