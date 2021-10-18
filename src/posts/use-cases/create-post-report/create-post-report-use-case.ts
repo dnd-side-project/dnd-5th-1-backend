@@ -5,9 +5,11 @@ import {
 } from 'posts/controllers/create-post-report/create-post-report-dto'
 import { PostReportModel } from 'infra/models/post-report-model'
 import { getRepository } from 'typeorm'
+import * as CreatePostReportErrors from './create-post-report-error'
 
-type Response = CreatePostReportOutputDto
-//   | CreatePostErrors.InvalidTitle
+type Response =
+  | CreatePostReportOutputDto
+  | CreatePostReportErrors.AlreadyReportedPost
 //   | CreatePostErrors.InvalidDescription
 
 export class CreatePostReport {
@@ -21,7 +23,7 @@ export class CreatePostReport {
         postId: inputDto.postId,
       })
       if (exists) {
-        throw new Error('Already reported post')
+        return new CreatePostReportErrors.AlreadyReportedPost()
       }
       const report = postReportRepository.create({
         userId: inputDto.userId,
@@ -35,7 +37,7 @@ export class CreatePostReport {
       }
       return outputDto
     } catch (error) {
-      throw new Error(error.message)
+      throw Error(error.message)
     }
   }
 }

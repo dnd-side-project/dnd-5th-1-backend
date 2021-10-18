@@ -22,6 +22,7 @@ export class ListPostsController extends BaseController {
       const result = await this.useCase.execute(dto)
 
       if (result instanceof UseCaseError) {
+        console.log('sdfsdf?')
         switch (result.constructor) {
           case ListPostsErrors.SomeProperListPostError:
           // return this.someProperResponseFunction in base controller

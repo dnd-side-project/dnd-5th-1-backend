@@ -21,8 +21,10 @@ export class CreatePostReportController extends BaseController {
 
     try {
       const result = await this.useCase.execute(inputDto)
+      console.log('herere')
 
       if (result instanceof UseCaseError) {
+        console.log('create post report', result)
         switch (result.constructor) {
           default:
             return this.clientError(result.message)
@@ -32,7 +34,7 @@ export class CreatePostReportController extends BaseController {
         return this.ok(this.res, 200, outputDto)
       }
     } catch (error: unknown) {
-      console.log(error)
+      console.log('create report controller', error)
       if (error instanceof Error) {
         return this.fail(error)
       }
