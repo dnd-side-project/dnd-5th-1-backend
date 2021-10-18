@@ -109,7 +109,7 @@ export class PostRepository implements IPostRepository {
         total,
       }
     } catch (error) {
-      console.log('###########: ' + error.code)
+      console.log('Repository catch block: ' + error.code)
     }
   }
 

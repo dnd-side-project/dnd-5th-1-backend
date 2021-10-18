@@ -27,7 +27,7 @@ export class ListPosts {
       const outputDto: ListPostsOutputDto = result
       return outputDto
     } catch (error) {
-      console.log(error)
+      console.log('List post use case', error)
       throw new Error()
     }
   }

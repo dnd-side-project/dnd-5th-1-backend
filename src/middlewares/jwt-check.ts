@@ -44,8 +44,6 @@ export const jwtCheckIfExists = async (
         `JWT verified. Payload: ${JSON.stringify(jwtPayload, null, 4)}`
       )
       req.user = jwtPayload.userId.value
-    } else {
-      next()
     }
   } catch (error) {
     console.log(`JWT verification error: ${error}`)
